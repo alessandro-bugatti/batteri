@@ -169,8 +169,6 @@ public class mainForm extends javax.swing.JFrame {
         colori.add(Color.LIGHT_GRAY);
         nomiBatteri = (ArrayList<String>)recuperaNomi();
         System.out.println(nomiBatteri);
-        /*Codice da replicare per ogni tipo di batterio aggiunto*/
-        /*INIZIO*/
         int j = 0;
         for (String Batterio: nomiBatteri)
         {
@@ -185,15 +183,7 @@ public class mainForm extends javax.swing.JFrame {
             numeroBatteri.put(Batterio, 100);
         }
             
-        /*    
-        for (int i = 0; i < 100; i++)
-            batteri.add(new Tontino(r.nextInt(food.getWidth()),
-                                r.nextInt(food.getHeight()),
-                                Color.red,food));
-        numeroBatteri.put("Tontino", 100);
-        coloreBatteri.put("Tontino", Color.red);
-        nomiBatteri.add("Tontino");
-        /*FINE TONTINO*/
+       
         
         
         
