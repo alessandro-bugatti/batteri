@@ -164,7 +164,7 @@ public class mainForm extends javax.swing.JFrame {
         colori.add(Color.PINK);
         colori.add(Color.CYAN);
         colori.add(Color.DARK_GRAY);
-        colori.add(Color.WHITE);
+        colori.add(Color.GRAY);
         colori.add(Color.BLACK);
         colori.add(Color.LIGHT_GRAY);
         nomiBatteri = (ArrayList<String>)recuperaNomi();
