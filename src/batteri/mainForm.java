@@ -210,7 +210,7 @@ public class mainForm extends javax.swing.JFrame {
         jPanelResult.setLayout(new javax.swing.BoxLayout(jPanelResult, javax.swing.BoxLayout.Y_AXIS));
         getContentPane().add(jPanelResult, java.awt.BorderLayout.LINE_END);
 
-        jPanelTerrain.setBackground(new java.awt.Color(255, 255, 102));
+        jPanelTerrain.setBackground(new java.awt.Color(255, 255, 255));
         jPanelTerrain.setLayout(new java.awt.BorderLayout());
         getContentPane().add(jPanelTerrain, java.awt.BorderLayout.CENTER);
 
