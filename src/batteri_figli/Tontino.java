@@ -40,9 +40,6 @@ public class Tontino extends batteri.Batterio{
             x += dx; 
         if (y+dy >= 0 && y+dy<food.getHeight())
             y += dy; 
-        if (ControllaCibo() == true)
-            System.out.println("1");
-               
     }
     
     @Override
