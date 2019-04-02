@@ -34,12 +34,12 @@ abstract public class Batterio {
     /**
      * Contiene la durata massima del batterio
      */
-    protected int eta;
+    private int eta;
     /**
      * Contiene la "salute" del batterio.
      * Arrivata a zero il batterio muore
      */
-    protected int salute;
+    private int salute;
     /**
      * Flag che indica se il batterio è maturo per
      * la duplicazione o no
