@@ -25,7 +25,7 @@ import java.awt.Color;
  * Ogni tipo diverso di batterio eredita da questa classe
  * @author Alessandro Bugatti
  */
-abstract public class Batterio {
+abstract public class Batterio implements Cloneable{
     final private int DELTA;
     final static int MAX_LIFE = 1500;
     final static int MAX_HEALTH = 600;
@@ -72,6 +72,7 @@ abstract public class Batterio {
 	duplica=CICLO_RIPRODUTTIVO+(int)(Math.random()*100);
         food = f;
     }
+
     /**
      * Sposta il batterio nel terreno. Deve essere ridefinita nelle classi
      * ereditate per dar loro un comportamento diverso
@@ -180,6 +181,14 @@ abstract public class Batterio {
     {
         return food.getHeight();
     }
-    
 
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        Batterio b = (Batterio)super.clone(); //To change body of generated methods, choose Tools | Templates.
+        b.eta=(int)(Math.random()*MAX_LIFE)+500;
+	b.salute=(int)(Math.random()*MAX_HEALTH)+200;
+	b.duplica=CICLO_RIPRODUTTIVO+(int)(Math.random()*100);
+        return b;
+    }
+    
 }
