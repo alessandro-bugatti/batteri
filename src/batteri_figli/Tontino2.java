@@ -36,9 +36,9 @@ public class Tontino2 extends batteri.Batterio{
     protected void Sposta(){
         int dx = (int)(Math.random()*3) - 1;
         int dy = (int)(Math.random()*3) - 1;
-        if (x+dx >= 0 && x+dx<food.getWidth())
+        //if (x+dx >= 0 && x+dx<food.getWidth())
             x += dx; 
-        if (y+dy >= 0 && y+dy<food.getHeight())
+        //if (y+dy >= 0 && y+dy<food.getHeight())
             y += dy; 
     }
     
