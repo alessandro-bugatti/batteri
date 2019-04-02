@@ -37,38 +37,37 @@ public class mainForm extends javax.swing.JFrame {
     public mainForm() throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException, URISyntaxException {
         initComponents();
         running = false;
-        food = new Food(1024,700);
+        food = new Food(1024, 700);
         inizializzaBatteri();
-        terrain = new Terrain(food, batteri, jPanelTerrain.getBackground(),numeroBatteri);
+        terrain = new Terrain(food, batteri, Color.WHITE, numeroBatteri);
         this.jPanelTerrain.add(terrain);
         values = new javax.swing.JLabel[10];
-        for (int i = 0; i < nomiBatteri.size(); i++)
-            {
-                values[i] = new javax.swing.JLabel(nomiBatteri.get(i)+
-                        " " + numeroBatteri.get(nomiBatteri.get(i)));
-                values[i].setForeground(coloreBatteri.get(nomiBatteri.get(i)));
-                this.jPanelResult.add(values[i]);
-            } 
+        for (int i = 0; i < nomiBatteri.size(); i++) {
+            values[i] = new javax.swing.JLabel(nomiBatteri.get(i)
+                    + " " + numeroBatteri.get(nomiBatteri.get(i)));
+            values[i].setForeground(coloreBatteri.get(nomiBatteri.get(i)));
+            this.jPanelResult.add(values[i]);
+        }
         javax.swing.JButton btnStart = new javax.swing.JButton("Start");
-        btnStart.addActionListener(new ActionListener(){
+        btnStart.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                   timerUpdateSimulation.start();
-                   timerUpdateResult.start();
-                   timerUpdateFood.start();
-                }
+                timerUpdateSimulation.start();
+                timerUpdateResult.start();
+                timerUpdateFood.start();
             }
+        }
         );
         this.jPanelResult.add(btnStart);
         javax.swing.JButton btnStop = new javax.swing.JButton("Stop");
-        btnStop.addActionListener(new ActionListener(){
+        btnStop.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                   timerUpdateSimulation.stop();
-                   timerUpdateResult.stop();
-                   timerUpdateFood.stop();
-                }
+                timerUpdateSimulation.stop();
+                timerUpdateResult.stop();
+                timerUpdateFood.stop();
             }
+        }
         );
         this.jPanelResult.add(btnStop);
         pack();
@@ -79,18 +78,19 @@ public class mainForm extends javax.swing.JFrame {
             public void actionPerformed(ActionEvent e) {
                 //Lo scopo di running è evitare che riparta un ciclo
                 // di ridisegno del campo gara mentre ne è già in corso uno
-                if (running) return;
+                if (running) {
+                    return;
+                }
                 running = true;
                 terrain.repaint();
                 running = false;
             }
 
         };
-        timerUpdateSimulation = new Timer(50, taskUpdateSimulation); 
+        timerUpdateSimulation = new Timer(50, taskUpdateSimulation);
         //timer.setInitialDelay(2000);        
         //timerUpdateSimulation.setRepeats(true);
-        
-        
+
         //Timer per l'aggiunta di cibo
         ActionListener taskUpdateFood;
         taskUpdateFood = new ActionListener() {
@@ -100,55 +100,53 @@ public class mainForm extends javax.swing.JFrame {
             }
 
         };
-        timerUpdateFood = new Timer(1000, taskUpdateFood); 
+        timerUpdateFood = new Timer(1000, taskUpdateFood);
         //timer.setInitialDelay(2000);        
         timerUpdateFood.setRepeats(true);
         //timerUpdateFood.start();
-        
+
         //Timer per l'aggiornamento del pannello dei dati
         ActionListener taskUpdateResult;
         taskUpdateResult = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                for (int i = 0; i < nomiBatteri.size(); i++)
-                {
-                    values[i].setText(nomiBatteri.get(i)+
-                            " " + numeroBatteri.get(nomiBatteri.get(i)));
-                } 
+                for (int i = 0; i < nomiBatteri.size(); i++) {
+                    values[i].setText(nomiBatteri.get(i)
+                            + " " + numeroBatteri.get(nomiBatteri.get(i)));
+                }
             }
 
         };
-        timerUpdateResult = new Timer(1000, taskUpdateResult); 
+        timerUpdateResult = new Timer(1000, taskUpdateResult);
         //timer.setInitialDelay(2000);        
         //timerUpdateResult.setRepeats(true);
         //timerUpdateResult.start();
-     }
-    
+    }
+
     /**
      * Funzione che recupera il nme di tutti i battei ereditati che si trovano
      * nel package batteri_figli
      */
-    private List<String> recuperaNomi() throws IOException, URISyntaxException
-    {
-        List<String> nomi= new ArrayList<String>(), files;
+    private List<String> recuperaNomi() throws IOException, URISyntaxException {
+        List<String> nomi = new ArrayList<String>(), files;
         Path path = new File(
-        this.getClass().getResource("../batteri_figli/Tontino.class").toURI()
-).getParentFile().toPath();
+                this.getClass().getResource("../batteri_figli/Tontino.class").toURI()
+        ).getParentFile().toPath();
         files = Files.walk(path)
-                                 .map(Path::getFileName)
-                                 .map(Path::toString)
-                                 .filter(n -> n.endsWith(".class"))
-                                 .collect(Collectors.toList());
-        for(String nome:files)
+                .map(Path::getFileName)
+                .map(Path::toString)
+                .filter(n -> n.endsWith(".class"))
+                .collect(Collectors.toList());
+        for (String nome : files) {
             nomi.add(nome.replace(".class", ""));
+        }
         return nomi;
-    }        
-            
-    
+    }
+
     /**
      * Inizializza la lista dei batteri
      */
-    private void inizializzaBatteri() throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException, URISyntaxException{
+    private void inizializzaBatteri() throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException, URISyntaxException {
         batteri = new LinkedList<>();
         Random r = new Random();
         numeroBatteri = new HashMap<>();
@@ -167,24 +165,24 @@ public class mainForm extends javax.swing.JFrame {
         colori.add(Color.WHITE);
         colori.add(Color.BLACK);
         colori.add(Color.LIGHT_GRAY);
-        nomiBatteri = (ArrayList<String>)recuperaNomi();
+        nomiBatteri = (ArrayList<String>) recuperaNomi();
         System.out.println(nomiBatteri);
         /*Codice da replicare per ogni tipo di batterio aggiunto*/
-        /*INIZIO*/
+ /*INIZIO*/
         int j = 0;
-        for (String Batterio: nomiBatteri)
-        {
+        for (String Batterio : nomiBatteri) {
             Color c = colori.get(j++);
-            for (int i = 0; i < 100; i++)
-                batteri.add((Batterio)Class.forName("batteri_figli." + Batterio).
-                                    getConstructor(Integer.TYPE,Integer.TYPE,Color.class,Food.class).
-                                    newInstance(r.nextInt(food.getWidth()),
+            for (int i = 0; i < 100; i++) {
+                batteri.add((Batterio) Class.forName("batteri_figli." + Batterio).
+                        getConstructor(Integer.TYPE, Integer.TYPE, Color.class, Food.class).
+                        newInstance(r.nextInt(food.getWidth()),
                                 r.nextInt(food.getHeight()),
-                                c,food));
+                                c, food));
+            }
             coloreBatteri.put(Batterio, c);
             numeroBatteri.put(Batterio, 100);
         }
-            
+
         /*    
         for (int i = 0; i < 100; i++)
             batteri.add(new Tontino(r.nextInt(food.getWidth()),
@@ -194,11 +192,8 @@ public class mainForm extends javax.swing.JFrame {
         coloreBatteri.put("Tontino", Color.red);
         nomiBatteri.add("Tontino");
         /*FINE TONTINO*/
-        
-        
-        
     }
-    
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -291,8 +286,7 @@ public class mainForm extends javax.swing.JFrame {
     private LinkedList<Batterio> batteri;
     private Food food;
     private boolean running;
-    private HashMap<String,Integer> numeroBatteri;
-    private HashMap<String,Color> coloreBatteri;
+    private HashMap<String, Integer> numeroBatteri;
+    private HashMap<String, Color> coloreBatteri;
     private ArrayList<String> nomiBatteri;
-    
 }

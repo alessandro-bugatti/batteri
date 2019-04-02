@@ -36,7 +36,11 @@ public class Terrain extends JPanel {
             Batterio batterio = i.next();
             g.setColor(sfondo);
             g.fillRect(batterio.getX(), batterio.getY(), 2, 2);
-            batterio.Run();
+            try{
+                batterio.Run();
+            }catch(Exception e){
+                System.out.println("Eccezione: " + e + " -> " + batterio.getClass().getName());
+            }
             String tipo_batterio = batterio.getClass().getName().replace("batteri_figli.", "");
             if (batterio.Morto())
             {

@@ -16,38 +16,32 @@ package batteri_figli;
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-*/
-
-
-
+ */
 import java.awt.Color;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Classe d'esempio per la gara
+ *
  * @author Alessandro Bugatti &lt; alessandro.bugatti@gmail.com &gt;
  */
+public class Tontino extends batteri.Batterio implements Cloneable {
 
-public class Tontino extends batteri.Batterio{
-    public Tontino(int x, int y, Color c, batteri.Food f){
-        super(x,y,c,f);
+    public Tontino(int x, int y, Color c, batteri.Food f) {
+        super(x, y, c, f);
     }
+
     @Override
-    protected void Sposta(){
-        int dx = (int)(Math.random()*3) - 1;
-        int dy = (int)(Math.random()*3) - 1;
-        if (x+dx >= 0 && x+dx<food.getWidth())
-            x += dx; 
-        if (y+dy >= 0 && y+dy<food.getHeight())
-            y += dy; 
-        if (ControllaCibo() == true)
-            System.out.println("1");
-               
+    protected void Sposta() {
+        int dx = (int) (Math.random() * 3) - 1;
+        int dy = (int) (Math.random() * 3) - 1;
+        if (x + dx >= 0 && x + dx < getFoodWidth()) {
+            x += dx;
+        }
+        if (y + dy >= 0 && y + dy < getFoodHeight()) {
+            y += dy;
+        }
     }
-    
-    @Override
-    public batteri.Batterio Clona(){
-       return new Tontino(x,y,colore,food); 
-    }
-    
 }
