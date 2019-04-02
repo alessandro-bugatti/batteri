@@ -56,7 +56,7 @@ abstract public class Batterio {
     /**
      * Riferimento al cibo
      */
-    protected Food food;
+    private Food food;
     /**
      * Colore tipo del batterio
      */
@@ -170,5 +170,16 @@ abstract public class Batterio {
     final public Color getColore() {
         return colore;
     }
+    
+    final protected int getFoodWitdh()
+    {
+        return food.getWidth();
+    }
+    
+    final protected int getFoodHeight()
+    {
+        return food.getHeight();
+    }
+    
 
 }

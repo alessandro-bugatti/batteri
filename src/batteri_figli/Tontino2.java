@@ -22,13 +22,15 @@ package batteri_figli;
 
 import java.awt.Color;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Classe d'esempio per la gara
  * @author Alessandro Bugatti &lt; alessandro.bugatti@gmail.com &gt;
  */
 
-public class Tontino2 extends batteri.Batterio{
+public class Tontino2 extends batteri.Batterio implements Cloneable{
     public Tontino2(int x, int y, Color c, batteri.Food f){
         super(x,y,c,f);
     }
@@ -44,7 +46,12 @@ public class Tontino2 extends batteri.Batterio{
     
     @Override
     public batteri.Batterio Clona(){
-       return new Tontino2(x,y,colore,food); 
+       try { 
+            return (Tontino2)this.clone();
+        } catch (CloneNotSupportedException ex) {
+            Logger.getLogger(Tontino.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null; 
     }
     
 }
