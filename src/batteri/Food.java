@@ -124,9 +124,13 @@ public class Food {
      * @param x Coordinata x da controllare
      * @param y Coordinata y da controllare
      * @return True se c'è cibo in x,y, false altrimenti
+     * @warning Se x e y non sono valori validi per la matrice
+     * ritorna false, evitando di sollevare un'eccezione
      */
     public boolean isFood(int x, int y)
     {
+        if (x < 0 || x >= width || y < 0 || y >= height)
+            return false;
         return food[x][y];
     }
 
