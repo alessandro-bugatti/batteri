@@ -125,7 +125,7 @@ public class mainForm extends javax.swing.JFrame {
      }
     
     /**
-     * Funzione che recupera il nme di tutti i battei ereditati che si trovano
+     * Funzione che recupera il nome di tutti i batteri ereditati che si trovano
      * nel package batteri_figli
      */
     private List<String> recuperaNomi() throws IOException, URISyntaxException
