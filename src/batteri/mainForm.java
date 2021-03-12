@@ -33,6 +33,14 @@ public class mainForm extends javax.swing.JFrame {
 
     /**
      * Creates new form mainForm
+     * 
+     * @throws java.lang.ClassNotFoundException
+     * @throws java.lang.NoSuchMethodException
+     * @throws java.lang.InstantiationException
+     * @throws java.lang.IllegalAccessException
+     * @throws java.io.IOException
+     * @throws java.lang.reflect.InvocationTargetException
+     * @throws java.net.URISyntaxException
      */
     public mainForm() throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException, URISyntaxException {
         initComponents();

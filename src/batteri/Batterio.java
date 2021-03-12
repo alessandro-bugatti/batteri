@@ -79,7 +79,8 @@ abstract public class Batterio implements Cloneable{
      */
     abstract protected void Sposta();
     /**
-     *\brief Controlla se c'è del cibo nella posizione occupata dal batterio
+     * Controlla se c'è del cibo nella posizione occupata dal batterio
+     * @return True se c'è del cibo, false altrimenti
      */
     protected final boolean ControllaCibo(){
         return food.isFood(getX(), getY());
@@ -88,6 +89,7 @@ abstract public class Batterio implements Cloneable{
      * brief Controlla se c'è del cibo nella posizione x,y
      * @param X Posizione x dove cercare il cibo
      * @param Y Posizione y dove cercare il cibo
+     * @return True se c'è del cibo, false altrimenti
      */
     protected final boolean ControllaCibo(int X, int Y){
         return food.isFood(X, Y);
@@ -105,6 +107,7 @@ abstract public class Batterio implements Cloneable{
     }
     /**
      * Controlla se un batterio è fecondo
+     * @return True se è fecondo, false altrimenti
      */
     public final boolean Fecondo(){
         if ((duplica == 0) && (salute > BUONA_SALUTE))
@@ -117,6 +120,7 @@ abstract public class Batterio implements Cloneable{
     /**
      * Controlla se un batterio è morto o perchè
      * troppo vecchio o perchè non ha abbastanza salute
+     * @return True se è morto, false altrimenti
      */
     public final boolean Morto(){
         if ((salute<1) || (eta < 1)) return true;
@@ -147,7 +151,7 @@ abstract public class Batterio implements Cloneable{
     }
     /**
      * Clona il batterio in senso biologico
-     * @return Un nuovo baterio creato con la stessa posizione
+     * @return Un nuovo batterio creato con la stessa posizione
      * di quello originale
      */
     abstract public Batterio Clona();

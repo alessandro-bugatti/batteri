@@ -69,7 +69,6 @@ public class Food {
     /**
      * Distribuisce il cibo secondo una distribuzione
      * casuale
-     * @param l lato del quadrato della distribuzione   
      * @param q quantità di cibo da distribuire
      */
     public void randomDistribution(int q)
@@ -124,8 +123,8 @@ public class Food {
      * @param x Coordinata x da controllare
      * @param y Coordinata y da controllare
      * @return True se c'è cibo in x,y, false altrimenti
-     * @warning Se x e y non sono valori validi per la matrice
-     * ritorna false, evitando di sollevare un'eccezione
+     * <strong> Se x e y non sono valori validi per la matrice
+     * ritorna false, evitando di sollevare un'eccezione</strong>
      */
     public boolean isFood(int x, int y)
     {
