@@ -211,14 +211,18 @@ public class mainForm extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Bacteria");
-        setResizable(false);
+        setMinimumSize(new java.awt.Dimension(1324, 700));
+        setPreferredSize(new java.awt.Dimension(1324, 70));
 
         jPanelResult.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         jPanelResult.setMinimumSize(new java.awt.Dimension(150, 100));
+        jPanelResult.setPreferredSize(new java.awt.Dimension(300, 70));
         jPanelResult.setLayout(new javax.swing.BoxLayout(jPanelResult, javax.swing.BoxLayout.Y_AXIS));
         getContentPane().add(jPanelResult, java.awt.BorderLayout.LINE_END);
 
         jPanelTerrain.setBackground(new java.awt.Color(255, 255, 255));
+        jPanelTerrain.setMinimumSize(new java.awt.Dimension(1324, 700));
+        jPanelTerrain.setPreferredSize(new java.awt.Dimension(1024, 700));
         jPanelTerrain.setLayout(new java.awt.BorderLayout());
         getContentPane().add(jPanelTerrain, java.awt.BorderLayout.CENTER);
 
