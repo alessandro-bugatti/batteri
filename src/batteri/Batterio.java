@@ -186,6 +186,32 @@ abstract public class Batterio implements Cloneable{
         return food.getHeight();
     }
 
+    
+    /**
+     * @return età
+     */
+    public int getAge()
+    {
+        return this.eta;
+    }
+    
+    /**
+     * @return salute
+     */
+    public int getHealth()
+    {
+        return this.salute;
+    }
+    
+    /**
+     * @return quanti cicli mancano alla duplicazione
+     */
+    public int getDuplica()
+    {
+        return this.duplica;
+    }
+    
+    
     @Override
     protected Object clone() throws CloneNotSupportedException {
         Batterio b = (Batterio)super.clone(); //To change body of generated methods, choose Tools | Templates.
@@ -196,3 +222,4 @@ abstract public class Batterio implements Cloneable{
     }
     
 }
+    
