@@ -180,24 +180,17 @@ public class mainForm extends javax.swing.JFrame {
         colori.add(Color.LIGHT_GRAY);
         nomiBatteri = (ArrayList<String>)recuperaNomi();
         System.out.println(nomiBatteri);
-        int j = 0;
-        for (String Batterio: nomiBatteri)
-        {
-            Color c = colori.get(j++);
-            for (int i = 0; i < 100; i++)
-                batteri.add((Batterio)Class.forName("batteri_figli." + Batterio).
-                                    getConstructor(Integer.TYPE,Integer.TYPE,Color.class,Food.class).
-                                    newInstance(r.nextInt(food.getWidth()),
-                                r.nextInt(food.getHeight()),
-                                c,food));
-            coloreBatteri.put(Batterio, c);
-            numeroBatteri.put(Batterio, 100);
-        }
-            
-       
-        
-        
-        
+        for (int i = 0; i < 100; i++) {
+            for (int j=0; j<nomiBatteri.size(); j++) {
+                Color c = colori.get(j);
+                batteri.add((Batterio)Class.forName("batteri_figli." + nomiBatteri.get(j))
+                        .getConstructor(Integer.TYPE,Integer.TYPE,Color.class,Food.class)
+                        .newInstance(r.nextInt(food.getWidth()),
+                            r.nextInt(food.getHeight()), c,food));
+                coloreBatteri.put(nomiBatteri.get(j), c);
+                numeroBatteri.put(nomiBatteri.get(j), 100);
+            }
+        } 
     }
     
     /**
