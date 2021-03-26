@@ -80,6 +80,8 @@ public class mainForm extends javax.swing.JFrame {
         );
         this.jPanelResult.add(btnStop);
         pack();
+        this.setSize(food.getWidth()+ LARGHEZZA_PANNELLO_LATERALE, 
+                    food.getHeight()+ ALTEZZA_BORDO);
         //Timer per l'aggiornamento della simulazione
         ActionListener taskUpdateSimulation;
         taskUpdateSimulation = new ActionListener() {
@@ -211,8 +213,8 @@ public class mainForm extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Bacteria");
-        setMinimumSize(new java.awt.Dimension(1324, 700));
-        setPreferredSize(new java.awt.Dimension(1324, 70));
+        setPreferredSize(new java.awt.Dimension(0, 0));
+        setResizable(false);
 
         jPanelResult.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         jPanelResult.setMinimumSize(new java.awt.Dimension(150, 100));
@@ -296,5 +298,6 @@ public class mainForm extends javax.swing.JFrame {
     private HashMap<String,Integer> numeroBatteri;
     private HashMap<String,Color> coloreBatteri;
     private ArrayList<String> nomiBatteri;
-    
+    static private final int LARGHEZZA_PANNELLO_LATERALE = 300; 
+    static private final int ALTEZZA_BORDO = 30; 
 }
