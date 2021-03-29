@@ -186,10 +186,13 @@ public class mainForm extends javax.swing.JFrame {
                         .getConstructor(Integer.TYPE,Integer.TYPE,Color.class,Food.class)
                         .newInstance(r.nextInt(food.getWidth()),
                             r.nextInt(food.getHeight()), c,food));
-                coloreBatteri.put(nomiBatteri.get(j), c);
-                numeroBatteri.put(nomiBatteri.get(j), 100);
             }
-        } 
+        }
+        for (int j=0; j<nomiBatteri.size(); j++) {
+            Color c = colori.get(j);
+            coloreBatteri.put(nomiBatteri.get(j), c);
+            numeroBatteri.put(nomiBatteri.get(j), 100);
+        }
     }
     
     /**
