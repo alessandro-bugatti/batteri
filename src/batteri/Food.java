@@ -89,7 +89,6 @@ public class Food {
         int corner = random.nextInt(4);
         switch(corner){
             case 0: 
-                System.out.println("0");
                 x=0;
                 y=0;
                 dx = 1;
