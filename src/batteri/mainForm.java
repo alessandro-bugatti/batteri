@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package batteri;
 
 import java.awt.event.ActionEvent;
@@ -51,38 +47,34 @@ public class mainForm extends javax.swing.JFrame {
         terrain = new Terrain(food, batteri, jPanelTerrain.getBackground(),numeroBatteri);
         this.jPanelTerrain.add(terrain);
         values = new javax.swing.JLabel[10];
-        for (int i = 0; i < nomiBatteri.size(); i++)
-            {
-                values[i] = new javax.swing.JLabel(nomiBatteri.get(i)+
-                        " " + numeroBatteri.get(nomiBatteri.get(i)));
-                values[i].setForeground(coloreBatteri.get(nomiBatteri.get(i)));
-                this.jPanelResult.add(values[i]);
-            } 
+        for (int i = 0; i < nomiBatteri.size(); i++) {
+            values[i] = new javax.swing.JLabel(nomiBatteri.get(i)+
+                " " + numeroBatteri.get(nomiBatteri.get(i)));
+            values[i].setForeground(coloreBatteri.get(nomiBatteri.get(i)));
+            this.jPanelResult.add(values[i]);
+        } 
         javax.swing.JButton btnStart = new javax.swing.JButton("Start");
-        btnStart.addActionListener(new ActionListener(){
+        btnStart.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                   timerUpdateSimulation.start();
-                   timerUpdateResult.start();
-                   timerUpdateFood.start();
-                }
+                timerUpdateSimulation.start();
+                timerUpdateResult.start();
+                timerUpdateFood.start();
             }
-        );
+        });
         this.jPanelResult.add(btnStart);
         javax.swing.JButton btnStop = new javax.swing.JButton("Stop");
-        btnStop.addActionListener(new ActionListener(){
+        btnStop.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                   timerUpdateSimulation.stop();
-                   timerUpdateResult.stop();
-                   timerUpdateFood.stop();
-                }
+                timerUpdateSimulation.stop();
+                timerUpdateResult.stop();
+                timerUpdateFood.stop();
             }
-        );
+        });
         this.jPanelResult.add(btnStop);
         pack();
-        this.setSize(food.getWidth()+ LARGHEZZA_PANNELLO_LATERALE, 
-                    food.getHeight()+ ALTEZZA_BORDO);
+        this.setSize(food.getWidth()+ LARGHEZZA_PANNELLO_LATERALE, food.getHeight()+ ALTEZZA_BORDO);
         //Timer per l'aggiornamento della simulazione
         ActionListener taskUpdateSimulation;
         taskUpdateSimulation = new ActionListener() {
@@ -95,13 +87,10 @@ public class mainForm extends javax.swing.JFrame {
                 terrain.repaint();
                 running = false;
             }
-
         };
-        timerUpdateSimulation = new Timer(25, taskUpdateSimulation); 
+        timerUpdateSimulation = new Timer(50, taskUpdateSimulation); 
         //timer.setInitialDelay(2000);        
         //timerUpdateSimulation.setRepeats(true);
-        
-        
         //Timer per l'aggiunta di cibo
         ActionListener taskUpdateFood;
         taskUpdateFood = new ActionListener() {
@@ -109,13 +98,11 @@ public class mainForm extends javax.swing.JFrame {
             public void actionPerformed(ActionEvent e) {
                 terrain.toggleFood();
             }
-
         };
-        timerUpdateFood = new Timer(500, taskUpdateFood); 
+        timerUpdateFood = new Timer(1000, taskUpdateFood); 
         //timer.setInitialDelay(2000);        
         timerUpdateFood.setRepeats(true);
         //timerUpdateFood.start();
-        
         //Timer per l'aggiornamento del pannello dei dati
         ActionListener taskUpdateResult;
         taskUpdateResult = new ActionListener() {
@@ -128,14 +115,12 @@ public class mainForm extends javax.swing.JFrame {
                 }
                 System.out.println();
             }
-
         };
-        timerUpdateResult = new Timer(500, taskUpdateResult); 
+        timerUpdateResult = new Timer(1000, taskUpdateResult); 
         //timer.setInitialDelay(2000);        
         //timerUpdateResult.setRepeats(true);
         //timerUpdateResult.start();
-     }
-    
+    }
     /**
      * Funzione che recupera il nome di tutti i batteri ereditati che si trovano
      * nel package batteri_figli
@@ -157,9 +142,7 @@ public class mainForm extends javax.swing.JFrame {
         for(String nome:files)
             nomi.add(nome.replace(".class", ""));
         return nomi;
-    }        
-            
-    
+    }
     /**
      * Inizializza la lista dei batteri
      */
@@ -193,10 +176,11 @@ public class mainForm extends javax.swing.JFrame {
                 Batterio b = (Batterio)Class.forName("batteri_figli." + nomiBatteri.get(j))
                         .getConstructor(Integer.TYPE,Integer.TYPE,Color.class,Food.class)
                         .newInstance(r.nextInt(food.getWidth()));
-            } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException e) {
+            } catch (IllegalArgumentException e) {
+            } catch (Exception e) {
                 System.out.println(nomiBatteri.get(j)+" removed");
                 nomiBatteri.remove(j);
-            } catch (IllegalArgumentException e) {}
+            }
         }
         System.out.println(nomiBatteri);
         for (int i = 0; i < 100; i++) {
@@ -214,16 +198,13 @@ public class mainForm extends javax.swing.JFrame {
             numeroBatteri.put(nomiBatteri.get(j), 100);
         }
     }
-    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
      * regenerated by the Form Editor.1111111
      */
     @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
-
         jPanelResult = new javax.swing.JPanel();
         jPanelTerrain = new javax.swing.JPanel();
 
@@ -245,8 +226,7 @@ public class mainForm extends javax.swing.JFrame {
         getContentPane().add(jPanelTerrain, java.awt.BorderLayout.CENTER);
 
         pack();
-    }// </editor-fold>//GEN-END:initComponents
-
+    }
     /**
      * @param args the command line arguments
      */
@@ -299,10 +279,10 @@ public class mainForm extends javax.swing.JFrame {
             }
         });
     }
-    // Variables declaration - do not modify//GEN-BEGIN:variables
+    // Variables declaration - do not modify
     private javax.swing.JPanel jPanelResult;
     private javax.swing.JPanel jPanelTerrain;
-    // End of variables declaration//GEN-END:variables
+    // End of variables declaration
     private javax.swing.JLabel values[];
     private Terrain terrain;
     private javax.swing.Timer timerUpdateSimulation;
