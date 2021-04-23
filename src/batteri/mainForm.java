@@ -21,11 +21,27 @@ import java.util.stream.Collectors;
 import javax.swing.Timer;
 
 /**
- *
  * @author Alessandro Bugatti 2015
  */
 public class mainForm extends javax.swing.JFrame {
-
+    // Variables declaration - do not modify
+    private javax.swing.JPanel jPanelResult;
+    private javax.swing.JPanel jPanelTerrain;
+    // End of variables declaration
+    private javax.swing.JLabel values[];
+    private Terrain terrain;
+    private javax.swing.Timer timerUpdateSimulation;
+    private javax.swing.Timer timerUpdateFood;
+    private javax.swing.Timer timerUpdateResult;
+    private LinkedList<Batterio> batteri;
+    private Food food;
+    private boolean running;
+    private HashMap<String,Integer> numeroBatteri;
+    private HashMap<String,Color> coloreBatteri;
+    private ArrayList<String> nomiBatteri;
+    static private final int LARGHEZZA_PANNELLO_LATERALE = 300; 
+    static private final int ALTEZZA_BORDO = 30;
+    
     /**
      * Creates new form mainForm
      * 
@@ -173,12 +189,12 @@ public class mainForm extends javax.swing.JFrame {
         Se trova queste classi le elimina dalla LinkedList {nomiBatteri} */
         for (int j=0; j<nomiBatteri.size(); j++) {
             try {
-                Batterio b = (Batterio)Class.forName("batteri_figli." + nomiBatteri.get(j))
+                Batterio temp = (Batterio) Class.forName("batteri_figli." + nomiBatteri.get(j))
                         .getConstructor(Integer.TYPE,Integer.TYPE,Color.class,Food.class)
                         .newInstance(r.nextInt(food.getWidth()));
             } catch (IllegalArgumentException e) {
             } catch (Exception e) {
-                System.out.println(nomiBatteri.get(j)+" removed");
+                System.out.println(nomiBatteri.get(j)+" removed because it hasn't extended Batterio");
                 nomiBatteri.remove(j);
             }
         }
@@ -279,21 +295,4 @@ public class mainForm extends javax.swing.JFrame {
             }
         });
     }
-    // Variables declaration - do not modify
-    private javax.swing.JPanel jPanelResult;
-    private javax.swing.JPanel jPanelTerrain;
-    // End of variables declaration
-    private javax.swing.JLabel values[];
-    private Terrain terrain;
-    private javax.swing.Timer timerUpdateSimulation;
-    private javax.swing.Timer timerUpdateFood;
-    private javax.swing.Timer timerUpdateResult;
-    private LinkedList<Batterio> batteri;
-    private Food food;
-    private boolean running;
-    private HashMap<String,Integer> numeroBatteri;
-    private HashMap<String,Color> coloreBatteri;
-    private ArrayList<String> nomiBatteri;
-    static private final int LARGHEZZA_PANNELLO_LATERALE = 300; 
-    static private final int ALTEZZA_BORDO = 30; 
 }

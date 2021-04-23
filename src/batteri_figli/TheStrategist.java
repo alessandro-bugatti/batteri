@@ -29,7 +29,7 @@ public class TheStrategist extends batteri.Batterio {
         direzione = (byte)(Math.random() * 4); //direzione scelta casualmente
     }
     @Override
-    public void Sposta() {
+    public void sposta() {
         /*ricerca vicina (40 controlli)
         Compie una ricerca a simil-spirale, controllando inizialmente le celle con un costo minore
         e le controlla tutte fino a quelle che costano {TERMINERICERCAVICINA} incluse */
@@ -37,50 +37,50 @@ public class TheStrategist extends batteri.Batterio {
             int tx = x, ty = y-i;
             //inizia dalla casella più a nord
             for (int j=1; j<=i; j++) //scende {+y} a destra {+x}
-                if (ControllaCibo(++tx, ++ty)) {x = tx; y = ty; return;}
+                if (controllaCibo(++tx, ++ty)) {x = tx; y = ty; return;}
             for (int j=1; j<=i; j++) //scende {+y} a sinistra {-x}
-                if (ControllaCibo(--tx, ++ty)) {x = tx; y = ty; return;}
+                if (controllaCibo(--tx, ++ty)) {x = tx; y = ty; return;}
             for (int j=1; j<=i; j++) //sale {-y} a sinistra {-x}
-                if (ControllaCibo(--tx, --ty)) {x = tx; y = ty; return;}
+                if (controllaCibo(--tx, --ty)) {x = tx; y = ty; return;}
             for (int j=1; j<=i; j++)  //sale {-y} a destra {+x}
-                if (ControllaCibo(++tx, --ty)) {x = tx; y = ty; return;}
+                if (controllaCibo(++tx, --ty)) {x = tx; y = ty; return;}
         }
         /* ricerca distante (300 controlli)
         parte dalle caselle vicine ed arriva fino a {termineRicercaDistante}
         controlla in orizzontale, verticale e vari livelli di obliquo */
         for (int j=TERMINERICERCAVICINA+1; j<termineRicercaDistante; j+=INCREMENTO) {
             int mezzo = j/2, unTerzo = j/3, dueTerzi = unTerzo*2;
-            if (ControllaCibo(x+j, y)) { //verso est
+            if (controllaCibo(x+j, y)) { //verso est
                 x+=j; return;
-            } else if (ControllaCibo(x-j, y)) { //verso ovest
+            } else if (controllaCibo(x-j, y)) { //verso ovest
                 x-=j; return;
-            } else if (ControllaCibo(x, y+j)) { //verso sud
+            } else if (controllaCibo(x, y+j)) { //verso sud
                 y+=j; return;
-            } else if (ControllaCibo(x, y-j)) { //verso nord
+            } else if (controllaCibo(x, y-j)) { //verso nord
                 y-=j; return;
-            } else if (ControllaCibo(x+mezzo, y+mezzo)) { //verso sud-est
+            } else if (controllaCibo(x+mezzo, y+mezzo)) { //verso sud-est
                 x+=mezzo; y+=mezzo; return;
-            } else if (ControllaCibo(x-mezzo, y-mezzo)) { //nord-ovest
+            } else if (controllaCibo(x-mezzo, y-mezzo)) { //nord-ovest
                 x-=mezzo; y-=mezzo; return;
-            } else if (ControllaCibo(x-mezzo, y+mezzo)) { //sud-ovest
+            } else if (controllaCibo(x-mezzo, y+mezzo)) { //sud-ovest
                 x-=mezzo; y+=mezzo; return;
-            } else if (ControllaCibo(x+mezzo, y-mezzo)) { //nord-est
+            } else if (controllaCibo(x+mezzo, y-mezzo)) { //nord-est
                 x+=mezzo; y-=mezzo; return;
-            }  else if (ControllaCibo(x-dueTerzi, y-unTerzo)) { //ovest-nord-ovest
+            }  else if (controllaCibo(x-dueTerzi, y-unTerzo)) { //ovest-nord-ovest
                 x-=dueTerzi; y-=unTerzo; return;
-            } else if (ControllaCibo(x-unTerzo, y-dueTerzi)) { //nord-nord-ovest
+            } else if (controllaCibo(x-unTerzo, y-dueTerzi)) { //nord-nord-ovest
                 x-=unTerzo; y-=dueTerzi; return;
-            } else if (ControllaCibo(x+unTerzo, y-dueTerzi)) { //nord-nord-est
+            } else if (controllaCibo(x+unTerzo, y-dueTerzi)) { //nord-nord-est
                 x+=unTerzo; y-=dueTerzi; return;
-            } else if (ControllaCibo(x+dueTerzi, y-unTerzo)) { //est-nord-est
+            } else if (controllaCibo(x+dueTerzi, y-unTerzo)) { //est-nord-est
                 x+=dueTerzi; y-=unTerzo; return;
-            } else if (ControllaCibo(x+dueTerzi, y+unTerzo)) { //est-sud-est
+            } else if (controllaCibo(x+dueTerzi, y+unTerzo)) { //est-sud-est
                 x+=dueTerzi; y+=unTerzo; return;
-            } else if (ControllaCibo(x+unTerzo, y+dueTerzi)) { //sud-sud-est
+            } else if (controllaCibo(x+unTerzo, y+dueTerzi)) { //sud-sud-est
                 x+=unTerzo; y+=dueTerzi; return;
-            } else if (ControllaCibo(x-unTerzo, y+dueTerzi)) { //sud-sud-ovest
+            } else if (controllaCibo(x-unTerzo, y+dueTerzi)) { //sud-sud-ovest
                 x-=unTerzo; y+=dueTerzi; return;
-            } else if (ControllaCibo(x-dueTerzi, y+unTerzo)) { //ovest-sud-ovest
+            } else if (controllaCibo(x-dueTerzi, y+unTerzo)) { //ovest-sud-ovest
                 x-=dueTerzi; y+=unTerzo; return;
             }
         }

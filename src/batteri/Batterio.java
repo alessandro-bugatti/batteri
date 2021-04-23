@@ -80,12 +80,12 @@ abstract public class Batterio implements Cloneable {
      * Sposta il batterio nel terreno. Deve essere ridefinita nelle classi
      * ereditate per dar loro un comportamento diverso
      */
-    protected abstract void Sposta();
+    protected abstract void sposta();
     /**
      * Controlla se c'è del cibo nella posizione occupata dal batterio
      * @return True se c'è del cibo, false altrimenti
      */
-    protected final boolean ControllaCibo() {
+    protected final boolean controllaCibo() {
         return food.isFood(getX(), getY());
     }
     /**
@@ -94,14 +94,14 @@ abstract public class Batterio implements Cloneable {
      * @param Y Posizione y dove cercare il cibo
      * @return True se c'è del cibo, false altrimenti
      */
-    protected final boolean ControllaCibo(int X, int Y) {
+    protected final boolean controllaCibo(int X, int Y) {
         return food.isFood(X, Y);
     }
     /**
      * Se nella posizione occupata dal batterio c'è del cibo lo mangia e incrementa la sua salute di DELTA
      */
-    private final void Mangia() {
-        if (ControllaCibo()) {
+    private final void mangia() {
+        if (this.controllaCibo()) {
             food.eatFood(x, y);
             salute+=DELTA;
         }
@@ -110,7 +110,7 @@ abstract public class Batterio implements Cloneable {
      * Controlla se un batterio è fecondo
      * @return True se è fecondo, false altrimenti
      */
-    public final boolean Fecondo() {
+    public final boolean fecondo() {
         if (duplica == 0 && salute > BUONA_SALUTE) {
 			duplica = BUONA_SALUTE;
 			return true;
@@ -121,7 +121,7 @@ abstract public class Batterio implements Cloneable {
      * Controlla se un batterio è morto o perchè troppo vecchio o perchè non ha abbastanza salute
      * @return True se è morto, false altrimenti
      */
-    public final boolean Morto() {
+    public final boolean morto() {
         if (salute<1 || eta < 1)
             return true;
         else
@@ -130,19 +130,18 @@ abstract public class Batterio implements Cloneable {
     /**
      * Esegue le mosse del batterio
      */
-    public final void Run() {
-        if (Morto()) return ;
+    public final void run() {
+        if (this.morto())
+            return;
         int xprec = getX();
         int yprec = getY();
-        Sposta(); /*Calcolo le nuove coord
-     * inate del batterio*/
-        Mangia(); /*Mangia l'eventuale cibo*/
-        eta--; /*Faccio invecchiare il batterio*/
-        /*Diminuisce la sua salute
-        in funzione dello spostamento effettuato secondo una metrica Manhattan*/
+        this.sposta(); //Calcolo le nuove coordinate del batterio
+        this.mangia(); //Mangia l'eventuale cibo
+        eta--; //Faccio invecchiare il batterio
+        //Diminuisce la sua salute in funzione dello spostamento effettuato secondo una metrica Manhattan
         int sforzo = Math.abs(getX()-xprec) + Math.abs(getY()-yprec);
         salute-=sforzo;
-        /*Diminuisce il tempo per la riproduzione, solo se si è mosso, altrimenti no*/
+        //Diminuisce il tempo per la riproduzione, solo se si è mosso, altrimenti no
         if (duplica>0 && sforzo!=0)
             duplica--;
     }
@@ -197,6 +196,7 @@ abstract public class Batterio implements Cloneable {
     /**
      * Clona il batterio in senso biologico
      * @return Un nuovo batterio creato con la stessa posizione di quello originale
+     * @throws java.lang.CloneNotSupportedException
      */
     @Override
     protected Object clone() throws CloneNotSupportedException {
