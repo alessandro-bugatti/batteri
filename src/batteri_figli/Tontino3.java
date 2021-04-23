@@ -1,4 +1,5 @@
 package batteri_figli;
+import batteri.Batterio;
 import batteri.Food;
 import java.awt.Color;
 public class Tontino3 extends batteri.Batterio{
@@ -24,10 +25,13 @@ public class Tontino3 extends batteri.Batterio{
                 y--;
             }
         }
+        int n[] = new int[3];
+        for (int i=0; i<3; i++) {
+            n[i]=i;
+        }
     }
     @Override
-    protected batteri.Batterio clone() {
-        Tontino3 a = new Tontino3(x,y,getColore(),f);
-        return a;
+    public batteri.Batterio clone() throws CloneNotSupportedException {
+        return (Batterio) super.clone();
     }
 }

@@ -1,12 +1,10 @@
 package batteri_figli;
+import batteri.Batterio;
 import java.awt.Color;
 /**
  * @version 1.0
  */
 public class TheStrategist extends batteri.Batterio {
-    public enum dir{
-        sun, nord,est,ovest
-    }
     //direzione che percorre, usato nello switch per il movimento
     private byte direzione;
     //0: nord, 1: sud, 2: est, 3: ovest
@@ -24,12 +22,10 @@ public class TheStrategist extends batteri.Batterio {
     //varaibili usate dal costruttore per il posizionamento iniziale dei batteri
     private static final int XSS = 1024/10/2, YSS = 700/10/2;
     private static int xS=XSS, yS=YSS;
-    private final batteri.Food f;
     public TheStrategist(int x, int y, Color c, batteri.Food f) {
         super(xS, yS, c, f); //definisce la posizione iniziale
-        this.f = f;
         xS+=XSS*2;
-        if (xS+XSS>super.getFoodWitdh()) {xS=XSS; yS+=YSS*2;}
+        if (xS+XSS>super.getFoodWidth()) {xS=XSS; yS+=YSS*2;}
         direzione = (byte)(Math.random() * 4); //direzione scelta casualmente
     }
     @Override
@@ -101,7 +97,7 @@ public class TheStrategist extends batteri.Batterio {
                 else {direzione = UP; y--;}
                 break;
             case RIGHT: //est
-                if (x+1<super.getFoodWitdh()-DISTANZADAIBORDI) x++;
+                if (x+1<super.getFoodWidth()-DISTANZADAIBORDI) x++;
                 else {direzione = LEFT; x--;}
                 break;
             default: //ovest
@@ -111,15 +107,15 @@ public class TheStrategist extends batteri.Batterio {
         }
     }
     @Override
-    public final batteri.Batterio clone() {
+    public Batterio clone() throws CloneNotSupportedException {
         //modifica il termine della ricerca distante (eseguito dopo circa 25 secondi dallo start)
         termineRicercaDistante = CONTINUO;
-        try { 
-            TheStrategist a = new TheStrategist(x, y, getColore(), f);
-            //il clone andrà a sinistra od a destra rispetto la direzione di {this}
-            a.direzione = 1;
-            return a;
-        } catch (Exception e) {}
-        return null;
+        TheStrategist a = (TheStrategist)super.clone();
+        //il clone andrà a sinistra od a destra rispetto la direzione di {this}
+        if (direzione == DOWN || direzione == UP)
+            a.direzione = (byte)(Math.random()*2+2);
+         else
+            a.direzione = (byte)(Math.random()*2);
+        return a;
     }
 }

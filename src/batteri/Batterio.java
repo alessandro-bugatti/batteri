@@ -25,24 +25,29 @@ import java.awt.Color;
  * Ogni tipo diverso di batterio eredita da questa classe
  * @author Alessandro Bugatti
  */
-abstract public class Batterio implements Cloneable{
-    final private int DELTA; //incremento della salute ogni qualvolta mangia il cibo
-    final static int MAX_LIFE = 1500;
-    final static int MAX_HEALTH = 600;
-    final static int CICLO_RIPRODUTTIVO = 500;
-    final static int BUONA_SALUTE = 200;
+abstract public class Batterio implements Cloneable {
+    /**
+     * Incremento della salute ogni qualvolta mangia il cibo
+     */
+    private final static int DELTA = 100;
+    private final static int MAX_LIFE = 1500;
+    private final static int MAX_HEALTH = 600;
+    private final static int CICLO_RIPRODUTTIVO = 500;
+    /**
+     * Salute minima necessaria per la riproduzione
+     */
+    private final static int BUONA_SALUTE = 200;
     /**
      * Contiene la durata massima del batterio
      */
     private int eta;
     /**
-     * Contiene la "salute" del batterio.
-     * Arrivata a zero il batterio muore
+     * Contiene la "salute" del batterio, arrivata a zero il batterio muore
      */
     private int salute;
     /**
-     * Flag che indica se il batterio è maturo per
-     * la duplicazione o no
+     * Flag che indica se il batterio è maturo per la duplicazione o no
+     * quando arriva a zero indica che può riprodursi
      */
     private int duplica;
     /**
@@ -56,14 +61,13 @@ abstract public class Batterio implements Cloneable{
     /**
      * Riferimento al cibo
      */
-    private Food food;
+    private final Food food;
     /**
      * Colore tipo del batterio
      */
-    protected Color colore;
-
+    private final Color colore;
+    
     public Batterio(int x, int y, Color c, Food f) {
-        this.DELTA = 100;
         this.x = x;
         this.y = y;
         this.colore=c;
@@ -72,17 +76,16 @@ abstract public class Batterio implements Cloneable{
         this.duplica=CICLO_RIPRODUTTIVO+(int)(Math.random()*100);
         this.food = f;
     }
-
     /**
      * Sposta il batterio nel terreno. Deve essere ridefinita nelle classi
      * ereditate per dar loro un comportamento diverso
      */
-    abstract protected void Sposta();
+    protected abstract void Sposta();
     /**
      * Controlla se c'è del cibo nella posizione occupata dal batterio
      * @return True se c'è del cibo, false altrimenti
      */
-    protected final boolean ControllaCibo(){
+    protected final boolean ControllaCibo() {
         return food.isFood(getX(), getY());
     }
     /**
@@ -91,14 +94,13 @@ abstract public class Batterio implements Cloneable{
      * @param Y Posizione y dove cercare il cibo
      * @return True se c'è del cibo, false altrimenti
      */
-    protected final boolean ControllaCibo(int X, int Y){
+    protected final boolean ControllaCibo(int X, int Y) {
         return food.isFood(X, Y);
     }
     /**
-     * Se nella posizione occupata dal batterio c'è del cibo lo mangia
-     * e incrementa la sua salute di DELTA
+     * Se nella posizione occupata dal batterio c'è del cibo lo mangia e incrementa la sua salute di DELTA
      */
-    private final void Mangia(){
+    private final void Mangia() {
         if (ControllaCibo()) {
             food.eatFood(x, y);
             salute+=DELTA;
@@ -108,16 +110,15 @@ abstract public class Batterio implements Cloneable{
      * Controlla se un batterio è fecondo
      * @return True se è fecondo, false altrimenti
      */
-    public final boolean Fecondo(){
+    public final boolean Fecondo() {
         if (duplica == 0 && salute > BUONA_SALUTE) {
 			duplica = BUONA_SALUTE;
 			return true;
 		}
-	return false;
+        return false;
     }
     /**
-     * Controlla se un batterio è morto o perchè
-     * troppo vecchio o perchè non ha abbastanza salute
+     * Controlla se un batterio è morto o perchè troppo vecchio o perchè non ha abbastanza salute
      * @return True se è morto, false altrimenti
      */
     public final boolean Morto() {
@@ -129,11 +130,12 @@ abstract public class Batterio implements Cloneable{
     /**
      * Esegue le mosse del batterio
      */
-    final public void Run() {
+    public final void Run() {
         if (Morto()) return ;
         int xprec = getX();
         int yprec = getY();
-        Sposta(); /*Calcolo le nuove coordinate del batterio*/
+        Sposta(); /*Calcolo le nuove coord
+     * inate del batterio*/
         Mangia(); /*Mangia l'eventuale cibo*/
         eta--; /*Faccio invecchiare il batterio*/
         /*Diminuisce la sua salute
@@ -145,52 +147,63 @@ abstract public class Batterio implements Cloneable{
             duplica--;
     }
     /**
-     * @return the x
+     * @return x
      */
-    public int getX() {
+    public final int getX() {
         return x;
     }
     /**
-     * @return the y
+     * @return y
      */
-    public int getY() {
+    public final int getY() {
         return y;
     }
     /**
-     * @return the colore
+     * @return il colore
      */
-    final public Color getColore() {
+    public final Color getColore() {
         return colore;
     }
-    final protected int getFoodWitdh() {
+    /**
+     * @return la larghezza del terreno
+     */
+    protected final int getFoodWidth() {
         return food.getWidth();
     }
-    final protected int getFoodHeight() {
+    /**
+     * @return l'altezza del terreno
+     */
+    protected final int getFoodHeight() {
         return food.getHeight();
     }
     /**
      * @return età
      */
-    public int getAge() {
+    public final int getAge() {
         return this.eta;
     }
     /**
      * @return salute
      */
-    public int getHealth() {
+    public final int getHealth() {
         return this.salute;
     }
     /**
      * @return quanti cicli mancano alla duplicazione
      */
-    public int getDuplica() {
+    public final int getDuplica() {
         return this.duplica;
     }
     /**
      * Clona il batterio in senso biologico
-     * @return Un nuovo batterio creato con la stessa posizione
-     * di quello originale
+     * @return Un nuovo batterio creato con la stessa posizione di quello originale
      */
     @Override
-    abstract protected Object clone();
+    protected Object clone() throws CloneNotSupportedException {
+        Batterio b = (Batterio)super.clone();
+        b.eta=(int)(Math.random()*MAX_LIFE)+500;
+        b.salute=(int)(Math.random()*MAX_HEALTH)+200;
+        b.duplica=CICLO_RIPRODUTTIVO+(int)(Math.random()*100);
+        return b;
+    }
 }

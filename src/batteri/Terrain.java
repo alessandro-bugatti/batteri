@@ -1,3 +1,21 @@
+/*
+  Copyright (C) 2013 Alessandro Bugatti (alessandro.bugatti@istruzione.it)
+
+  This program is free software; you can redistribute it and/or
+  modify it under the terms of the GNU General Public License
+  as published by the Free Software Foundation; either version 2
+  of the License, or (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+*/
+
 package batteri;
 
 import java.awt.Color;
@@ -49,9 +67,13 @@ public class Terrain extends JPanel {
                 i.remove();
             }
             else if (batterio.Fecondo()) {
-                Batterio b = (Batterio) batterio.clone();
-                babies.add(b);
-                numeroBatteri.put(tipo_batterio, numeroBatteri.get(tipo_batterio)+1);
+                try {
+                    Batterio b = (Batterio) batterio.clone();
+                    babies.add(b);
+                    numeroBatteri.put(tipo_batterio, numeroBatteri.get(tipo_batterio)+1);
+                } catch (CloneNotSupportedException e) {
+                    System.out.println(e);
+                }
             }
             else {
                 g.setColor(batterio.getColore());
@@ -65,7 +87,7 @@ public class Terrain extends JPanel {
             for (int j = 0; j < food.getHeight(); j++)
                 if (food.isFood(i, j))
                     g.fillRect(i, j, 2, 2);
-    }  
+    } 
     public void toggleFood() {
         food.squareDistribution(50, 500);
     }

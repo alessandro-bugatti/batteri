@@ -38,7 +38,11 @@ public class Food {
      * Altezza della matrice
      */
     private final int height;
-    Random random;
+    /**
+     * is used to generate a stream of pseudorandom numbers
+     */
+    private final Random random;
+    
     /**
      * @param w Larghezza della matrice
      * @param h Altezza della matrice
@@ -144,5 +148,4 @@ public class Food {
     public int getHeight() {
         return height;
     }
-
 }
