@@ -22,7 +22,6 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import javax.swing.JButton;
 import javax.swing.Timer;
 
 /**
@@ -42,7 +41,9 @@ public class mainForm extends javax.swing.JFrame {
      * @throws java.lang.reflect.InvocationTargetException
      * @throws java.net.URISyntaxException
      */
-    public mainForm() throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException, URISyntaxException {
+    public mainForm() throws ClassNotFoundException, NoSuchMethodException, 
+            InstantiationException, IllegalAccessException, IllegalArgumentException, 
+            InvocationTargetException, IOException, URISyntaxException {
         initComponents();
         running = false;
         food = new Food(1024,700);
@@ -96,7 +97,7 @@ public class mainForm extends javax.swing.JFrame {
             }
 
         };
-        timerUpdateSimulation = new Timer(50, taskUpdateSimulation); 
+        timerUpdateSimulation = new Timer(25, taskUpdateSimulation); 
         //timer.setInitialDelay(2000);        
         //timerUpdateSimulation.setRepeats(true);
         
@@ -110,7 +111,7 @@ public class mainForm extends javax.swing.JFrame {
             }
 
         };
-        timerUpdateFood = new Timer(1000, taskUpdateFood); 
+        timerUpdateFood = new Timer(500, taskUpdateFood); 
         //timer.setInitialDelay(2000);        
         timerUpdateFood.setRepeats(true);
         //timerUpdateFood.start();
@@ -120,15 +121,16 @@ public class mainForm extends javax.swing.JFrame {
         taskUpdateResult = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                for (int i = 0; i < nomiBatteri.size(); i++)
-                {
+                for (int i = 0; i < nomiBatteri.size(); i++) {
                     values[i].setText(nomiBatteri.get(i)+
                             " " + numeroBatteri.get(nomiBatteri.get(i)));
-                } 
+                    System.out.print(numeroBatteri.get(nomiBatteri.get(i))+" ");
+                }
+                System.out.println();
             }
 
         };
-        timerUpdateResult = new Timer(1000, taskUpdateResult); 
+        timerUpdateResult = new Timer(500, taskUpdateResult); 
         //timer.setInitialDelay(2000);        
         //timerUpdateResult.setRepeats(true);
         //timerUpdateResult.start();
@@ -138,17 +140,20 @@ public class mainForm extends javax.swing.JFrame {
      * Funzione che recupera il nome di tutti i batteri ereditati che si trovano
      * nel package batteri_figli
      */
-    private List<String> recuperaNomi() throws IOException, URISyntaxException
-    {
+    private List<String> recuperaNomi() throws IOException, URISyntaxException {
         List<String> nomi= new ArrayList<String>(), files;
-        Path path = new File(
-        this.getClass().getResource("../batteri_figli/Tontino.class").toURI()
-).getParentFile().toPath();
+        Path path;
+        try {
+            path = new File(this.getClass().getResource("../batteri_figli/Tontino.class").toURI())
+                .getParentFile().toPath();
+        } catch (Exception e) {
+            path = Paths.get(new File( "." ).getCanonicalPath()+"/build/classes/batteri_figli/");
+        }
         files = Files.walk(path)
-                                 .map(Path::getFileName)
-                                 .map(Path::toString)
-                                 .filter(n -> n.endsWith(".class"))
-                                 .collect(Collectors.toList());
+            .map(Path::getFileName)
+            .map(Path::toString)
+            .filter(n -> n.endsWith(".class"))
+            .collect(Collectors.toList());
         for(String nome:files)
             nomi.add(nome.replace(".class", ""));
         return nomi;
@@ -158,7 +163,9 @@ public class mainForm extends javax.swing.JFrame {
     /**
      * Inizializza la lista dei batteri
      */
-    private void inizializzaBatteri() throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException, URISyntaxException{
+    private void inizializzaBatteri() throws ClassNotFoundException, NoSuchMethodException, 
+            InstantiationException, IllegalAccessException, IllegalArgumentException, 
+            InvocationTargetException, IOException, URISyntaxException {
         batteri = new LinkedList<>();
         Random r = new Random();
         numeroBatteri = new HashMap<>();
@@ -178,6 +185,19 @@ public class mainForm extends javax.swing.JFrame {
         colori.add(Color.BLACK);
         colori.add(Color.LIGHT_GRAY);
         nomiBatteri = (ArrayList<String>)recuperaNomi();
+        /* Controlla la presenza di batteri non validi appartenenti a nomiBatteri, quindi tutte le 
+        classi che non ereditano da Batterio
+        Se trova queste classi le elimina dalla LinkedList {nomiBatteri} */
+        for (int j=0; j<nomiBatteri.size(); j++) {
+            try {
+                Batterio b = (Batterio)Class.forName("batteri_figli." + nomiBatteri.get(j))
+                        .getConstructor(Integer.TYPE,Integer.TYPE,Color.class,Food.class)
+                        .newInstance(r.nextInt(food.getWidth()));
+            } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException e) {
+                System.out.println(nomiBatteri.get(j)+" removed");
+                nomiBatteri.remove(j);
+            } catch (IllegalArgumentException e) {}
+        }
         System.out.println(nomiBatteri);
         for (int i = 0; i < 100; i++) {
             for (int j=0; j<nomiBatteri.size(); j++) {
@@ -232,8 +252,8 @@ public class mainForm extends javax.swing.JFrame {
      */
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+        /* editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) "
+         * If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
          */
         try {
