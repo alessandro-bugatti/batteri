@@ -26,7 +26,7 @@ import java.awt.Color;
  * @author Alessandro Bugatti
  */
 abstract public class Batterio implements Cloneable{
-    final private int DELTA;
+    final private int DELTA; //incremento della salute ogni qualvolta mangia il cibo
     final static int MAX_LIFE = 1500;
     final static int MAX_HEALTH = 600;
     final static int CICLO_RIPRODUTTIVO = 500;
@@ -65,12 +65,12 @@ abstract public class Batterio implements Cloneable{
     public Batterio(int x, int y, Color c, Food f) {
         this.DELTA = 100;
         this.x = x;
-	this.y = y;
-	colore=c;
-	eta=(int)(Math.random()*MAX_LIFE)+500;
-	salute=(int)(Math.random()*MAX_HEALTH)+200;
-	duplica=CICLO_RIPRODUTTIVO+(int)(Math.random()*100);
-        food = f;
+        this.y = y;
+        this.colore=c;
+        this.eta=(int)(Math.random()*MAX_LIFE)+500;
+        this.salute=(int)(Math.random()*MAX_HEALTH)+200;
+        this.duplica=CICLO_RIPRODUTTIVO+(int)(Math.random()*100);
+        this.food = f;
     }
 
     /**
@@ -99,19 +99,17 @@ abstract public class Batterio implements Cloneable{
      * e incrementa la sua salute di DELTA
      */
     private final void Mangia(){
-            if (ControllaCibo())
-            {
-                food.eatFood(x, y);
-                salute+=DELTA;
-            }
+        if (ControllaCibo()) {
+            food.eatFood(x, y);
+            salute+=DELTA;
+        }
     }
     /**
      * Controlla se un batterio è fecondo
      * @return True se è fecondo, false altrimenti
      */
     public final boolean Fecondo(){
-        if ((duplica == 0) && (salute > BUONA_SALUTE))
-		{
+        if (duplica == 0 && salute > BUONA_SALUTE) {
 			duplica = BUONA_SALUTE;
 			return true;
 		}
@@ -122,104 +120,77 @@ abstract public class Batterio implements Cloneable{
      * troppo vecchio o perchè non ha abbastanza salute
      * @return True se è morto, false altrimenti
      */
-    public final boolean Morto(){
-        if ((salute<1) || (eta < 1)) return true;
-        else return false;
+    public final boolean Morto() {
+        if (salute<1 || eta < 1)
+            return true;
+        else
+            return false;
     }
     /**
      * Esegue le mosse del batterio
      */
-    final public void Run()
-    {
+    final public void Run() {
         if (Morto()) return ;
         int xprec = getX();
         int yprec = getY();
-    	/*Calcolo le nuove coordinate del batterio*/
-	Sposta();
-	/*Mangia l'eventuale cibo*/
-	Mangia();
-	/*Faccio invecchiare il batterio*/
-	eta--;
-	/*Diminuisce la sua salute
-	in funzione dello spostamento effettuato secondo una
-	metrica Manhattan*/
-	int sforzo = Math.abs(getX()-xprec) + Math.abs(getY()-yprec);
-	salute-=sforzo;
-	/*Diminuisce il tempo per la riproduzione,
-          solo se si è mosso, altrimenti no*/
-	if (duplica>0 && sforzo!=0) duplica--;
+        Sposta(); /*Calcolo le nuove coordinate del batterio*/
+        Mangia(); /*Mangia l'eventuale cibo*/
+        eta--; /*Faccio invecchiare il batterio*/
+        /*Diminuisce la sua salute
+        in funzione dello spostamento effettuato secondo una metrica Manhattan*/
+        int sforzo = Math.abs(getX()-xprec) + Math.abs(getY()-yprec);
+        salute-=sforzo;
+        /*Diminuisce il tempo per la riproduzione, solo se si è mosso, altrimenti no*/
+        if (duplica>0 && sforzo!=0)
+            duplica--;
     }
-    /**
-     * Clona il batterio in senso biologico
-     * @return Un nuovo batterio creato con la stessa posizione
-     * di quello originale
-     */
-    abstract public Batterio Clona();
     /**
      * @return the x
      */
     public int getX() {
         return x;
     }
-
     /**
      * @return the y
      */
     public int getY() {
         return y;
     }
-
     /**
      * @return the colore
      */
     final public Color getColore() {
         return colore;
     }
-    
-    final protected int getFoodWitdh()
-    {
+    final protected int getFoodWitdh() {
         return food.getWidth();
     }
-    
-    final protected int getFoodHeight()
-    {
+    final protected int getFoodHeight() {
         return food.getHeight();
     }
-
-    
     /**
      * @return età
      */
-    public int getAge()
-    {
+    public int getAge() {
         return this.eta;
     }
-    
     /**
      * @return salute
      */
-    public int getHealth()
-    {
+    public int getHealth() {
         return this.salute;
     }
-    
     /**
      * @return quanti cicli mancano alla duplicazione
      */
-    public int getDuplica()
-    {
+    public int getDuplica() {
         return this.duplica;
     }
-    
-    
+    /**
+     * Clona il batterio in senso biologico
+     * @return Un nuovo batterio creato con la stessa posizione
+     * di quello originale
+     */
     @Override
-    protected Object clone() throws CloneNotSupportedException {
-        Batterio b = (Batterio)super.clone(); //To change body of generated methods, choose Tools | Templates.
-        b.eta=(int)(Math.random()*MAX_LIFE)+500;
-	b.salute=(int)(Math.random()*MAX_HEALTH)+200;
-	b.duplica=CICLO_RIPRODUTTIVO+(int)(Math.random()*100);
-        return b;
-    }
-    
+    abstract protected Object clone();
 }
-    

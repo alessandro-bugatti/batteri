@@ -15,68 +15,58 @@ import javax.swing.JPanel;
  */
 
 public class Terrain extends JPanel {
+    private final Food food;
+    private final Color sfondo;
+    private final LinkedList<Batterio> batteri;
+    private final HashMap<String,Integer> numeroBatteri;
     public Terrain(Food f, LinkedList<Batterio> l, Color s,HashMap<String,Integer> numeroBatteri) {
         food = f;
         batteri = l;
         sfondo = s;
         this.numeroBatteri = numeroBatteri; 
     }
-
     @Override
     public Dimension getPreferredSize() {
         return new Dimension(1024,700);
     }
-
     @Override
     public void paintComponent(Graphics g) {
         g.setColor(sfondo);
         g.fillRect(0, 0, this.getWidth(), this.getHeight());
         LinkedList<Batterio> babies = new LinkedList<>();
-        for(Iterator<Batterio> i = batteri.iterator();i.hasNext();){
+        for(Iterator<Batterio> i = batteri.iterator(); i.hasNext();) {
             Batterio batterio = i.next();
             g.setColor(sfondo);
             g.fillRect(batterio.getX(), batterio.getY(), 2, 2);
-            try{
+            try {
                 batterio.Run();
-            }catch(Exception e){
+            } catch(Exception e) {
                 System.out.println("Eccezione: " + e + " -> " + batterio.getClass().getName());
             }
             String tipo_batterio = batterio.getClass().getName().replace("batteri_figli.", "");
-            if (batterio.Morto())
-            {
+            if (batterio.Morto()) {
                 numeroBatteri.put(tipo_batterio, numeroBatteri.get(tipo_batterio)-1);
                 i.remove();
             }
-            else if (batterio.Fecondo())
-            {
-                Batterio b = batterio.Clona();
+            else if (batterio.Fecondo()) {
+                Batterio b = (Batterio) batterio.clone();
                 babies.add(b);
                 numeroBatteri.put(tipo_batterio, numeroBatteri.get(tipo_batterio)+1);
             }
-            else{
+            else {
                 g.setColor(batterio.getColore());
                 g.fillRect(batterio.getX(), batterio.getY(), 3, 3);
             }
         }
         batteri.addAll(babies);
         //Ridisegna il cibo a ogni ciclo
-        {
-            g.setColor(Color.GREEN);
-            for (int i = 0; i < food.getWidth(); i++)
-                for (int j = 0; j < food.getHeight(); j++)
-                    if (food.isFood(i, j))
-                        g.fillRect(i, j, 2, 2);
-            
-        }
+        g.setColor(Color.GREEN);
+        for (int i = 0; i < food.getWidth(); i++)
+            for (int j = 0; j < food.getHeight(); j++)
+                if (food.isFood(i, j))
+                    g.fillRect(i, j, 2, 2);
     }  
-    
-    public void toggleFood()
-    {
+    public void toggleFood() {
         food.squareDistribution(50, 500);
     }
-        
-    private Food food;
-    private Color sfondo;
-    LinkedList<Batterio> batteri;
-    private HashMap<String,Integer> numeroBatteri;
 }
