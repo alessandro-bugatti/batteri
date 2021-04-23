@@ -100,7 +100,7 @@ abstract public class Batterio implements Cloneable {
     /**
      * Se nella posizione occupata dal batterio c'è del cibo lo mangia e incrementa la sua salute di DELTA
      */
-    private final void mangia() {
+    private void mangia() {
         if (this.controllaCibo()) {
             food.eatFood(x, y);
             salute+=DELTA;

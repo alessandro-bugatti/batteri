@@ -18,7 +18,7 @@ public class TheStrategist extends batteri.Batterio {
     //nelle rette viene controllato un pixel su {INCREMENTO}
     private static final int INCREMENTO = 7;
     //se arrivano a questa distanza tornano indietro
-    private static final int DISTANZADAIBORDI = 15;
+    private static final int DISTANZADAIBORDI = 0;
     //varaibili usate dal costruttore per il posizionamento iniziale dei batteri
     private static final int XSS = 1024/10/2, YSS = 700/10/2;
     private static int xS=XSS, yS=YSS;
