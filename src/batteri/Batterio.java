@@ -1,23 +1,4 @@
-/*
-  Copyright (C) 2013 Alessandro Bugatti (alessandro.bugatti@istruzione.it)
-
-  This program is free software; you can redistribute it and/or
-  modify it under the terms of the GNU General Public License
-  as published by the Free Software Foundation; either version 2
-  of the License, or (at your option) any later version.
-
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-*/
-
 package batteri;
-
 import java.awt.Color;
 
 /**
@@ -59,34 +40,30 @@ abstract public class Batterio implements Cloneable {
     */
     protected int y;
     /**
-     * Riferimento al cibo
-     */
-    private final Food food;
-    /**
      * Colore tipo del batterio
      */
     private final Color colore;
     
-    public Batterio(int x, int y, Color c, Food f) {
+    public Batterio(int x, int y, Color c) {
         this.x = x;
         this.y = y;
         this.colore=c;
         this.eta=(int)(Math.random()*MAX_LIFE)+500;
         this.salute=(int)(Math.random()*MAX_HEALTH)+200;
         this.duplica=CICLO_RIPRODUTTIVO+(int)(Math.random()*100);
-        this.food = f;
     }
     /**
      * Sposta il batterio nel terreno. Deve essere ridefinita nelle classi
      * ereditate per dar loro un comportamento diverso
+     * @throws java.lang.Exception
      */
-    protected abstract void sposta();
+    protected abstract void sposta() throws Exception;
     /**
      * Controlla se c'è del cibo nella posizione occupata dal batterio
      * @return True se c'è del cibo, false altrimenti
      */
     protected final boolean controllaCibo() {
-        return food.isFood(getX(), getY());
+        return Food.isFood(getX(), getY());
     }
     /**
      * brief Controlla se c'è del cibo nella posizione x,y
@@ -95,14 +72,14 @@ abstract public class Batterio implements Cloneable {
      * @return True se c'è del cibo, false altrimenti
      */
     protected final boolean controllaCibo(int X, int Y) {
-        return food.isFood(X, Y);
+        return Food.isFood(X, Y);
     }
     /**
      * Se nella posizione occupata dal batterio c'è del cibo lo mangia e incrementa la sua salute di DELTA
      */
     private void mangia() {
-        if (this.controllaCibo()) {
-            food.eatFood(x, y);
+        if (Food.isFood(x, y)) {
+            Food.eatFood(x, y);
             salute+=DELTA;
         }
     }
@@ -135,7 +112,11 @@ abstract public class Batterio implements Cloneable {
             return;
         int xprec = getX();
         int yprec = getY();
-        this.sposta(); //Calcolo le nuove coordinate del batterio
+        try {
+            this.sposta(); //Calcolo le nuove coordinate del batterio
+        } catch (Exception e) {
+            System.out.println(e);
+        }
         this.mangia(); //Mangia l'eventuale cibo
         eta--; //Faccio invecchiare il batterio
         //Diminuisce la sua salute in funzione dello spostamento effettuato secondo una metrica Manhattan
@@ -167,13 +148,13 @@ abstract public class Batterio implements Cloneable {
      * @return la larghezza del terreno
      */
     protected final int getFoodWidth() {
-        return food.getWidth();
+        return Food.getWidth();
     }
     /**
      * @return l'altezza del terreno
      */
     protected final int getFoodHeight() {
-        return food.getHeight();
+        return Food.getHeight();
     }
     /**
      * @return età
@@ -199,7 +180,7 @@ abstract public class Batterio implements Cloneable {
      * @throws java.lang.CloneNotSupportedException
      */
     @Override
-    protected Object clone() throws CloneNotSupportedException {
+    protected Batterio clone() throws CloneNotSupportedException {
         Batterio b = (Batterio)super.clone();
         b.eta=(int)(Math.random()*MAX_LIFE)+500;
         b.salute=(int)(Math.random()*MAX_HEALTH)+200;

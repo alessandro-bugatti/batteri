@@ -6,7 +6,6 @@ import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.math.BigInteger;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -25,17 +24,16 @@ import javax.swing.Timer;
  * @author Alessandro Bugatti 2015
  */
 public class mainForm extends javax.swing.JFrame {
-    // Variables declaration - do not modify
+    // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel jPanelResult;
     private javax.swing.JPanel jPanelTerrain;
-    // End of variables declaration
+    // End of variables declaration//GEN-END:variables
     private javax.swing.JLabel values[];
     private Terrain terrain;
     private javax.swing.Timer timerUpdateSimulation;
     private javax.swing.Timer timerUpdateFood;
     private javax.swing.Timer timerUpdateResult;
     private LinkedList<Batterio> batteri;
-    private Food food;
     private boolean running;
     private HashMap<String,Integer> numeroBatteri;
     private HashMap<String,Color> coloreBatteri;
@@ -60,7 +58,7 @@ public class mainForm extends javax.swing.JFrame {
             InvocationTargetException, IOException, URISyntaxException {
         initComponents();
         running = false;
-        food = new Food(1024,700);
+        Food food = new Food.Builder(1024,700).build();
         inizializzaBatteri();
         terrain = new Terrain(food, batteri, jPanelTerrain.getBackground(),numeroBatteri);
         this.jPanelTerrain.add(terrain);
@@ -91,7 +89,7 @@ public class mainForm extends javax.swing.JFrame {
         });
         this.jPanelResult.add(btnStop);
         pack();
-        this.setSize(food.getWidth()+ LARGHEZZA_PANNELLO_LATERALE, food.getHeight()+ ALTEZZA_BORDO);
+        this.setSize(Food.getWidth()+ LARGHEZZA_PANNELLO_LATERALE, Food.getHeight()+ ALTEZZA_BORDO);
         //Timer per l'aggiornamento della simulazione
         ActionListener taskUpdateSimulation;
         taskUpdateSimulation = new ActionListener() {
@@ -143,11 +141,11 @@ public class mainForm extends javax.swing.JFrame {
      * nel package batteri_figli
      */
     private List<String> recuperaNomi() throws IOException, URISyntaxException {
-        List<String> nomi= new ArrayList<String>(), files;
+        List<String> nomi= new ArrayList<>(), files;
         Path path;
         try {
-            path = new File(this.getClass().getResource("../batteri_figli/Tontino.class").toURI())
-                .getParentFile().toPath();
+            path = new File(this.getClass().getResource("../batteri_figli/Tontino.class")
+                    .toURI()).getParentFile().toPath();
         } catch (Exception e) {
             path = Paths.get(new File( "." ).getCanonicalPath()+"/build/classes/batteri_figli/");
         }
@@ -185,45 +183,48 @@ public class mainForm extends javax.swing.JFrame {
         colori.add(Color.BLACK);
         colori.add(Color.LIGHT_GRAY);
         nomiBatteri = (ArrayList<String>)recuperaNomi();
-        /* Controlla la presenza di batteri non validi appartenenti a nomiBatteri, quindi tutte le 
-        classi che non ereditano da Batterio
-        Se trova queste classi le elimina dalla LinkedList {nomiBatteri} */
+        /* Cerca classi non valide (tutte le classi che non ereditano da Batterio)
+        appartenenti alla lista nomiBatteri, quindi vengono eliminate */
         for (int j=0; j<nomiBatteri.size(); j++) {
+            Color c = colori.get(j);
             try {
                 Batterio temp = (Batterio) Class.forName("batteri_figli." + nomiBatteri.get(j))
-                        .getConstructor(Integer.TYPE,Integer.TYPE,Color.class,Food.class)
-                        .newInstance(r.nextInt(food.getWidth()));
+                        .getConstructor(Integer.TYPE,Integer.TYPE,Color.class)
+                        .newInstance(
+                                r.nextInt(Food.getWidth()), 
+                                r.nextInt(Food.getHeight()), 
+                                c
+                        );
             } catch (IllegalArgumentException e) {
                 //System.out.println(nomiBatteri.get(j)+": "+e);
-            } catch (ClassNotFoundException | IllegalAccessException | InstantiationException 
-                    | NoSuchMethodException | SecurityException | InvocationTargetException e) {
-                System.out.println(nomiBatteri.get(j)+" removed because it hasn't extended Batterio");
+            } catch (ClassNotFoundException | IllegalAccessException | 
+                    InstantiationException | NoSuchMethodException | 
+                    SecurityException | InvocationTargetException e) {
+                System.out.println(nomiBatteri.get(j)+" has been removed");
                 nomiBatteri.remove(j);
             }
         }
-        //System.out.println(nomiBatteri);
         //array temporaneo per contenere i tempi di esecuzione dei batteri, per effettuare la media
-        BigInteger h[] = new BigInteger[nomiBatteri.size()];
-        //inizializzazione dell'array
-        for (int i=0; i<nomiBatteri.size(); i++)
-            h[i] = new BigInteger("0");
+        int h[] = new int[nomiBatteri.size()];
         for (int i = 0; i < NUMEROBATTERIINIZIALI; i++) {
             for (int j=0; j<nomiBatteri.size(); j++) {
                 Color c = colori.get(j);
                 batteri.add((Batterio)Class.forName("batteri_figli." + nomiBatteri.get(j))
-                        .getConstructor(Integer.TYPE,Integer.TYPE,Color.class,Food.class)
-                        .newInstance(r.nextInt(food.getWidth()),
-                            r.nextInt(food.getHeight()), c,food));
+                        .getConstructor(Integer.TYPE,Integer.TYPE,Color.class)
+                        .newInstance(
+                                r.nextInt(Food.getWidth()), 
+                                r.nextInt(Food.getHeight()), 
+                                c
+                        ));
                 //Recupero dei tempi di esecuzione
                 long start = System.nanoTime();
                 batteri.get(j).run();
-                h[j] = h[j].add(new BigInteger(String.valueOf(System.nanoTime()-start)));
+                h[j] += System.nanoTime()-start;
             }
         }
         //stampa il tempo medio (in nanosecondi) di esecuzione di ciascun batterio
         for (int i=0; i<nomiBatteri.size(); i++)
-            System.out.println(h[i].divide(new BigInteger(String.valueOf(NUMEROBATTERIINIZIALI)))+
-                    "\tns ("+nomiBatteri.get(i)+')');
+            System.out.println(h[i]/NUMEROBATTERIINIZIALI+"\tns ("+nomiBatteri.get(i)+')');
         for (int j=0; j<nomiBatteri.size(); j++) {
             Color c = colori.get(j);
             coloreBatteri.put(nomiBatteri.get(j), c);
@@ -236,6 +237,7 @@ public class mainForm extends javax.swing.JFrame {
      * regenerated by the Form Editor.1111111
      */
     @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
         jPanelResult = new javax.swing.JPanel();
         jPanelTerrain = new javax.swing.JPanel();
@@ -258,7 +260,7 @@ public class mainForm extends javax.swing.JFrame {
         getContentPane().add(jPanelTerrain, java.awt.BorderLayout.CENTER);
 
         pack();
-    }
+    }// </editor-fold>//GEN-END:initComponents
     /**
      * @param args the command line arguments
      */

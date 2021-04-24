@@ -1,21 +1,3 @@
-/*
-  Copyright (C) 2013 Alessandro Bugatti (alessandro.bugatti@istruzione.it)
-
-  This program is free software; you can redistribute it and/or
-  modify it under the terms of the GNU General Public License
-  as published by the Free Software Foundation; either version 2
-  of the License, or (at your option) any later version.
-
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-*/
-
 package batteri;
 
 import java.util.Random;
@@ -29,25 +11,24 @@ public class Food {
     /**
      * Matrice del cibo
      */
-    private final boolean food[][];
+    private static boolean food[][];
     /**
      * Larghezza della matrice
      */
-    private final int width;
+    private static int width;
     /**
      * Altezza della matrice
      */
-    private final int height;
+    private static int height;
     /**
      * is used to generate a stream of pseudorandom numbers
      */
-    private final Random random;
-    
+    private static Random random;
     /**
      * @param w Larghezza della matrice
      * @param h Altezza della matrice
      */
-    public Food(int w, int h) {
+    private Food(int w, int h) {
         width = w;
         height = h;
         food = new boolean[w][h];
@@ -120,7 +101,7 @@ public class Food {
      * <strong> Se x e y non sono valori validi per la matrice
      * ritorna false, evitando di sollevare un'eccezione</strong>
      */
-    public boolean isFood(int x, int y) {
+    public static boolean isFood(int x, int y) {
         if (x < 0 || x >= width || y < 0 || y >= height)
             return false;
         return food[x][y];
@@ -130,22 +111,45 @@ public class Food {
      * @param x Coordinata x 
      * @param y Coordinata y 
      */
-    public void eatFood(int x, int y) {
-        food[x][y] = false;
-        //food[x+1][y] = false;
-        //food[x][y+1] = false;
-        //food[x+1][y+1] = false;
+    public static void eatFood(int x, int y) {
+        if (isFood(x,y))
+            food[x][y] = false;
     }
     /**
      * @return Larghezza
      */
-    public int getWidth() {
+    public static int getWidth() {
         return width;
     }
     /**
      * @return Altezza
      */
-    public int getHeight() {
+    public static int getHeight() {
         return height;
+    }
+    public static final class Builder {
+        /**
+         * Larghezza della matrice
+         */
+        private static int width;
+        /**
+         * Altezza della matrice
+         */
+        private static int height;
+        /**
+         * flag, true se l'oggetto è già stato istanziato
+         */
+        private static boolean istanziato = false;
+        public Builder (int w, int h) {
+            width = w;
+            height = h;
+        }
+        public Food build() throws NullPointerException {
+            if (!istanziato) {
+                istanziato = true;
+                return new Food(width, height);
+            }
+            return null;
+        }
     }
 }

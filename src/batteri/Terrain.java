@@ -1,21 +1,3 @@
-/*
-  Copyright (C) 2013 Alessandro Bugatti (alessandro.bugatti@istruzione.it)
-
-  This program is free software; you can redistribute it and/or
-  modify it under the terms of the GNU General Public License
-  as published by the Free Software Foundation; either version 2
-  of the License, or (at your option) any later version.
-
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-*/
-
 package batteri;
 
 import java.awt.Color;
@@ -33,15 +15,15 @@ import javax.swing.JPanel;
  */
 
 public class Terrain extends JPanel {
-    private final Food food;
+    public static Food food;
     private final Color sfondo;
     private final LinkedList<Batterio> batteri;
     private final HashMap<String,Integer> numeroBatteri;
     public Terrain(Food f, LinkedList<Batterio> l, Color s,HashMap<String,Integer> numeroBatteri) {
-        food = f;
         batteri = l;
         sfondo = s;
         this.numeroBatteri = numeroBatteri; 
+        food = f;
     }
     @Override
     public Dimension getPreferredSize() {
@@ -86,11 +68,11 @@ public class Terrain extends JPanel {
         batteri.addAll(babies);
         //Ridisegna il cibo a ogni ciclo
         g.setColor(Color.GREEN);
-        for (int i = 0; i < food.getWidth(); i++)
-            for (int j = 0; j < food.getHeight(); j++)
-                if (food.isFood(i, j))
+        for (int i = 0; i < Food.getWidth(); i++)
+            for (int j = 0; j < Food.getHeight(); j++)
+                if (Food.isFood(i, j))
                     g.fillRect(i, j, 2, 2);
-    } 
+    }
     public void toggleFood() {
         food.squareDistribution(50, 500);
     }
