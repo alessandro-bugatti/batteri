@@ -6,6 +6,7 @@ import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.math.BigInteger;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -39,8 +40,9 @@ public class mainForm extends javax.swing.JFrame {
     private HashMap<String,Integer> numeroBatteri;
     private HashMap<String,Color> coloreBatteri;
     private ArrayList<String> nomiBatteri;
-    static private final int LARGHEZZA_PANNELLO_LATERALE = 300; 
-    static private final int ALTEZZA_BORDO = 30;
+    private static final int LARGHEZZA_PANNELLO_LATERALE = 300; 
+    private static final int ALTEZZA_BORDO = 30;
+    private static final int NUMEROBATTERIINIZIALI = 100;
     
     /**
      * Creates new form mainForm
@@ -64,8 +66,7 @@ public class mainForm extends javax.swing.JFrame {
         this.jPanelTerrain.add(terrain);
         values = new javax.swing.JLabel[10];
         for (int i = 0; i < nomiBatteri.size(); i++) {
-            values[i] = new javax.swing.JLabel(nomiBatteri.get(i)+
-                " " + numeroBatteri.get(nomiBatteri.get(i)));
+            values[i] = new javax.swing.JLabel(nomiBatteri.get(i)+" "+numeroBatteri.get(nomiBatteri.get(i)));
             values[i].setForeground(coloreBatteri.get(nomiBatteri.get(i)));
             this.jPanelResult.add(values[i]);
         } 
@@ -125,9 +126,9 @@ public class mainForm extends javax.swing.JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 for (int i = 0; i < nomiBatteri.size(); i++) {
-                    values[i].setText(nomiBatteri.get(i)+
-                            " " + numeroBatteri.get(nomiBatteri.get(i)));
-                    System.out.print(numeroBatteri.get(nomiBatteri.get(i))+" ");
+                    values[i].setText(nomiBatteri.get(i)+" "+numeroBatteri.get(nomiBatteri.get(i)));
+                    if (numeroBatteri.get(nomiBatteri.get(i))>0)
+                        System.out.print(numeroBatteri.get(nomiBatteri.get(i))+" ");
                 }
                 System.out.println();
             }
@@ -193,25 +194,40 @@ public class mainForm extends javax.swing.JFrame {
                         .getConstructor(Integer.TYPE,Integer.TYPE,Color.class,Food.class)
                         .newInstance(r.nextInt(food.getWidth()));
             } catch (IllegalArgumentException e) {
-            } catch (Exception e) {
+                //System.out.println(nomiBatteri.get(j)+": "+e);
+            } catch (ClassNotFoundException | IllegalAccessException | InstantiationException 
+                    | NoSuchMethodException | SecurityException | InvocationTargetException e) {
                 System.out.println(nomiBatteri.get(j)+" removed because it hasn't extended Batterio");
                 nomiBatteri.remove(j);
             }
         }
-        System.out.println(nomiBatteri);
-        for (int i = 0; i < 100; i++) {
+        //System.out.println(nomiBatteri);
+        //array temporaneo per contenere i tempi di esecuzione dei batteri, per effettuare la media
+        BigInteger h[] = new BigInteger[nomiBatteri.size()];
+        //inizializzazione dell'array
+        for (int i=0; i<nomiBatteri.size(); i++)
+            h[i] = new BigInteger("0");
+        for (int i = 0; i < NUMEROBATTERIINIZIALI; i++) {
             for (int j=0; j<nomiBatteri.size(); j++) {
                 Color c = colori.get(j);
                 batteri.add((Batterio)Class.forName("batteri_figli." + nomiBatteri.get(j))
                         .getConstructor(Integer.TYPE,Integer.TYPE,Color.class,Food.class)
                         .newInstance(r.nextInt(food.getWidth()),
                             r.nextInt(food.getHeight()), c,food));
+                //Recupero dei tempi di esecuzione
+                long start = System.nanoTime();
+                batteri.get(j).run();
+                h[j] = h[j].add(new BigInteger(String.valueOf(System.nanoTime()-start)));
             }
         }
+        //stampa il tempo medio (in nanosecondi) di esecuzione di ciascun batterio
+        for (int i=0; i<nomiBatteri.size(); i++)
+            System.out.println(h[i].divide(new BigInteger(String.valueOf(NUMEROBATTERIINIZIALI)))+
+                    "\tns ("+nomiBatteri.get(i)+')');
         for (int j=0; j<nomiBatteri.size(); j++) {
             Color c = colori.get(j);
             coloreBatteri.put(nomiBatteri.get(j), c);
-            numeroBatteri.put(nomiBatteri.get(j), 100);
+            numeroBatteri.put(nomiBatteri.get(j), NUMEROBATTERIINIZIALI);
         }
     }
     /**
