@@ -1,5 +1,4 @@
 package batteri;
-
 import java.util.Random;
 
 /**
@@ -111,7 +110,7 @@ public class Food {
      * @param x Coordinata x 
      * @param y Coordinata y 
      */
-    public static void eatFood(int x, int y) {
+    public void eatFood(int x, int y) {
         if (isFood(x,y))
             food[x][y] = false;
     }
@@ -140,14 +139,30 @@ public class Food {
          * flag, true se l'oggetto è già stato istanziato
          */
         private static boolean istanziato = false;
+        /**
+         * True se è possibile richiedere il riferimento al cibo
+         */
+        private static boolean riferibile = true;
+        /**
+         * Riferimento al cibo
+         */
+        private static Food riferimento = null;
         public Builder (int w, int h) {
             width = w;
             height = h;
         }
-        public Food build() throws NullPointerException {
+        synchronized public Food build() throws NullPointerException {
             if (!istanziato) {
                 istanziato = true;
-                return new Food(width, height);
+                riferimento = new Food(width, height);
+                return riferimento;
+            }
+            return null;
+        }
+        synchronized static public Food getFood() throws NullPointerException {
+            if (istanziato && riferibile) {
+                riferibile = false;
+                return riferimento;
             }
             return null;
         }

@@ -69,50 +69,38 @@ public class mainForm extends javax.swing.JFrame {
             this.jPanelResult.add(values[i]);
         } 
         javax.swing.JButton btnStart = new javax.swing.JButton("Start");
-        btnStart.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                timerUpdateSimulation.start();
-                timerUpdateResult.start();
-                timerUpdateFood.start();
-            }
+        btnStart.addActionListener((ActionEvent e) -> {
+            timerUpdateSimulation.start();
+            timerUpdateResult.start();
+            timerUpdateFood.start();
         });
         this.jPanelResult.add(btnStart);
         javax.swing.JButton btnStop = new javax.swing.JButton("Stop");
-        btnStop.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                timerUpdateSimulation.stop();
-                timerUpdateResult.stop();
-                timerUpdateFood.stop();
-            }
+        btnStop.addActionListener((ActionEvent e) -> {
+            timerUpdateSimulation.stop();
+            timerUpdateResult.stop();
+            timerUpdateFood.stop();
         });
         this.jPanelResult.add(btnStop);
         pack();
         this.setSize(Food.getWidth()+ LARGHEZZA_PANNELLO_LATERALE, Food.getHeight()+ ALTEZZA_BORDO);
         //Timer per l'aggiornamento della simulazione
         ActionListener taskUpdateSimulation;
-        taskUpdateSimulation = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                //Lo scopo di running è evitare che riparta un ciclo
-                // di ridisegno del campo gara mentre ne è già in corso uno
-                if (running) return;
-                running = true;
-                terrain.repaint();
-                running = false;
-            }
+        taskUpdateSimulation = (ActionEvent e) -> {
+            //Lo scopo di running è evitare che riparta un ciclo
+            // di ridisegno del campo gara mentre ne è già in corso uno
+            if (running) return;
+            running = true;
+            terrain.repaint();
+            running = false;
         };
         timerUpdateSimulation = new Timer(50, taskUpdateSimulation); 
         //timer.setInitialDelay(2000);        
         //timerUpdateSimulation.setRepeats(true);
         //Timer per l'aggiunta di cibo
         ActionListener taskUpdateFood;
-        taskUpdateFood = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                terrain.toggleFood();
-            }
+        taskUpdateFood = (ActionEvent e) -> {
+            terrain.toggleFood();
         };
         timerUpdateFood = new Timer(1000, taskUpdateFood); 
         //timer.setInitialDelay(2000);        
@@ -120,16 +108,13 @@ public class mainForm extends javax.swing.JFrame {
         //timerUpdateFood.start();
         //Timer per l'aggiornamento del pannello dei dati
         ActionListener taskUpdateResult;
-        taskUpdateResult = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                for (int i = 0; i < nomiBatteri.size(); i++) {
-                    values[i].setText(nomiBatteri.get(i)+" "+numeroBatteri.get(nomiBatteri.get(i)));
-                    if (numeroBatteri.get(nomiBatteri.get(i))>0)
-                        System.out.print(numeroBatteri.get(nomiBatteri.get(i))+" ");
-                }
-                System.out.println();
+        taskUpdateResult = (ActionEvent e) -> {
+            for (int i = 0; i < nomiBatteri.size(); i++) {
+                values[i].setText(nomiBatteri.get(i)+" "+numeroBatteri.get(nomiBatteri.get(i)));
+                if (numeroBatteri.get(nomiBatteri.get(i))>0)
+                    System.out.print(numeroBatteri.get(nomiBatteri.get(i))+" ");
             }
+            System.out.println();
         };
         timerUpdateResult = new Timer(1000, taskUpdateResult); 
         //timer.setInitialDelay(2000);        
@@ -186,21 +171,19 @@ public class mainForm extends javax.swing.JFrame {
         /* Cerca classi non valide (tutte le classi che non ereditano da Batterio)
         appartenenti alla lista nomiBatteri, quindi vengono eliminate */
         for (int j=0; j<nomiBatteri.size(); j++) {
-            Color c = colori.get(j);
+            Color color = colori.get(j);
             try {
                 Batterio temp = (Batterio) Class.forName("batteri_figli." + nomiBatteri.get(j))
                         .getConstructor(Integer.TYPE,Integer.TYPE,Color.class)
                         .newInstance(
                                 r.nextInt(Food.getWidth()), 
                                 r.nextInt(Food.getHeight()), 
-                                c
+                                color
                         );
             } catch (IllegalArgumentException e) {
                 //System.out.println(nomiBatteri.get(j)+": "+e);
-            } catch (ClassNotFoundException | IllegalAccessException | 
-                    InstantiationException | NoSuchMethodException | 
-                    SecurityException | InvocationTargetException e) {
-                System.out.println(nomiBatteri.get(j)+" has been removed");
+            } catch (Exception e) {
+                System.out.println(nomiBatteri.get(j)+" has been removed ("+e+')');
                 nomiBatteri.remove(j);
             }
         }
@@ -208,18 +191,26 @@ public class mainForm extends javax.swing.JFrame {
         int h[] = new int[nomiBatteri.size()];
         for (int i = 0; i < NUMEROBATTERIINIZIALI; i++) {
             for (int j=0; j<nomiBatteri.size(); j++) {
-                Color c = colori.get(j);
-                batteri.add((Batterio)Class.forName("batteri_figli." + nomiBatteri.get(j))
+                Color color = colori.get(j);
+                try {
+                    batteri.add((Batterio)Class.forName("batteri_figli." + nomiBatteri.get(j))
                         .getConstructor(Integer.TYPE,Integer.TYPE,Color.class)
                         .newInstance(
                                 r.nextInt(Food.getWidth()), 
                                 r.nextInt(Food.getHeight()), 
-                                c
+                                color
                         ));
-                //Recupero dei tempi di esecuzione
-                long start = System.nanoTime();
-                batteri.get(j).run();
-                h[j] += System.nanoTime()-start;
+                    //Recupero dei tempi di esecuzione
+                    long start = System.nanoTime();
+                    batteri.get(j).run();
+                    h[j] += System.nanoTime()-start;
+                } catch (Exception e) {
+                    
+                    System.out.println(nomiBatteri.get(j)+" has been removed ("+e+')');
+                    nomiBatteri.remove(j);
+                    j--;
+                }
+                
             }
         }
         //stampa il tempo medio (in nanosecondi) di esecuzione di ciascun batterio
@@ -277,37 +268,24 @@ public class mainForm extends javax.swing.JFrame {
                     break;
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(mainForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(mainForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(mainForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+        } catch (ClassNotFoundException | InstantiationException | 
+                IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(mainForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 try {
                     new mainForm().setVisible(true);
-                } catch (ClassNotFoundException ex) {
-                    Logger.getLogger(mainForm.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (NoSuchMethodException ex) {
-                    Logger.getLogger(mainForm.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (InstantiationException ex) {
-                    Logger.getLogger(mainForm.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (IllegalAccessException ex) {
-                    Logger.getLogger(mainForm.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (IllegalArgumentException ex) {
-                    Logger.getLogger(mainForm.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (InvocationTargetException ex) {
-                    Logger.getLogger(mainForm.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (IOException ex) {
-                    Logger.getLogger(mainForm.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (URISyntaxException ex) {
+                } catch (ClassNotFoundException | NoSuchMethodException | 
+                        InstantiationException | IllegalAccessException | 
+                        IllegalArgumentException | InvocationTargetException | 
+                        IOException | URISyntaxException ex) {
                     Logger.getLogger(mainForm.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
