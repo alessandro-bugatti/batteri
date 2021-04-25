@@ -8,88 +8,106 @@ import java.awt.Color;
  */
 abstract public class Batterio implements Cloneable {
     /**
-     * Incremento della salute ogni qualvolta mangia il cibo
+     * L'età iniziale del batterio è composta da INITIAL_LIFE sommato 
+     * ad un numero casuale compreso tra zero e RANDOM_INITIAL_LIFE
      */
-    private final static int DELTA = 100;
-    private final static int MAX_LIFE = 1500;
-    private final static int MAX_HEALTH = 600;
-    private final static int CICLO_RIPRODUTTIVO = 500;
+    private final static int RANDOM_INITIAL_LIFE = 1500;
+    private final static int INITIAL_LIFE = 500;
+    /**
+     * La salute iniziale del batterio è composta da INITIAL_HEALTH sommato 
+     * ad un numero casuale compreso tra zero e RANDOM_INITIAL_HEALTH
+     */
+    private final static int RANDOM_INITIAL_HEALTH = 600;
+    private final static int INITIAL_HEALTH = 200;
     /**
      * Salute minima necessaria per la riproduzione
      */
-    private final static int BUONA_SALUTE = 200;
+    private final static int GOOD_HEALTH = 200;
     /**
-     * Contiene la durata massima del batterio
+     * Incremento della salute ogni qualvolta mangia il cibo
      */
-    private int eta;
+    private final static int INCREASE_HEALTH = 100;
     /**
-     * Contiene la "salute" del batterio, arrivata a zero il batterio muore
+     * I cicli riproduttivi iniziali del batterio sono composti da INITIAL_HEALTH sommato 
+     * ad un numero casuale compreso tra zero e RANDOM_REPRODUCTIVE_LOOPS
      */
-    private int salute;
+    private final static int INITIAL_REPRODUCTIVE_LOOPS = 500;
+    private final static int RANDOM_REPRODUCTIVE_LOOPS = 100;
     /**
-     * Flag che indica se il batterio è maturo per la duplicazione o no
-     * quando arriva a zero indica che può riprodursi
+     * Cicli riproduttivi del batterio dalla prima clonazione in poi
      */
-    private int duplica;
+    private final static int REPRODUCTIVE_LOOPS = 200;
     /**
-    * Posizione x del batterio nello schermo
+     * Contiene la vita del batterio, arrivata a zero il batterio muore
+     */
+    private int age;
+    /**
+     * Contiene la salute del batterio, arrivata a zero il batterio muore
+     */
+    private int health;
+    /**
+     * Contatore che indica qunti cicli mancano prima della sua clonazione
+     */
+    private int loopsForCloning;
+    /**
+    * Posizione x del batterio sul terreno
     */
     protected int x;
     /**
-    * Posizione y del batterio nello schermo
+    * Posizione y del batterio sul terreno
     */
     protected int y;
     /**
-     * Colore tipo del batterio
+     * Colore del batterio, uguale per qualli dello stesso tipo
      */
-    private final Color colore;
-    
+    private final Color color;
+    /**
+     * riferimento al cibo
+     */
+    private static final Food food;
+    /**
+     * 
+     * @param x coordinata x iniziale
+     * @param y coordinata y iniziale
+     * @param c colore del batterio
+     */
     public Batterio(int x, int y, Color c) {
         this.x = x;
         this.y = y;
-        this.colore=c;
-        this.eta=(int)(Math.random()*MAX_LIFE)+500;
-        this.salute=(int)(Math.random()*MAX_HEALTH)+200;
-        this.duplica=CICLO_RIPRODUTTIVO+(int)(Math.random()*100);
+        this.color = c;
+        this.age = (int)(Math.random()*RANDOM_INITIAL_LIFE)+INITIAL_LIFE;
+        this.health = (int)(Math.random()*RANDOM_INITIAL_HEALTH)+INITIAL_HEALTH;
+        this.loopsForCloning = INITIAL_REPRODUCTIVE_LOOPS + (int)(Math.random()*RANDOM_REPRODUCTIVE_LOOPS);
     }
     /**
-     * Sposta il batterio nel terreno. Deve essere ridefinita nelle classi
-     * ereditate per dar loro un comportamento diverso
+     * Recupera il riferimento a food
+     */
+    static {
+        food = Food.Builder.getFood();
+    }
+    /**
+     * Sposta il batterio sul terreno di gioco
+     * Deve essere ridefinita nelle classi ereditate per dar loro un comportamento diverso
      * @throws java.lang.Exception
      */
-    protected abstract void sposta() throws Exception;
+    protected abstract void move() throws Exception;
     /**
-     * Controlla se c'è del cibo nella posizione occupata dal batterio
-     * @return True se c'è del cibo, false altrimenti
+     * Se nella posizione occupata dal batterio c'è del cibo lo mangia 
+     * e incrementa la sua salute di DELTA
      */
-    protected final boolean controllaCibo() {
-        return Food.isFood(getX(), getY());
-    }
-    /**
-     * brief Controlla se c'è del cibo nella posizione x,y
-     * @param X Posizione x dove cercare il cibo
-     * @param Y Posizione y dove cercare il cibo
-     * @return True se c'è del cibo, false altrimenti
-     */
-    protected final boolean controllaCibo(int X, int Y) {
-        return Food.isFood(X, Y);
-    }
-    /**
-     * Se nella posizione occupata dal batterio c'è del cibo lo mangia e incrementa la sua salute di DELTA
-     */
-    private void mangia() {
+    private void eat() {
         if (Food.isFood(x, y)) {
-            Food.eatFood(x, y);
-            salute+=DELTA;
+            food.eatFood(x, y);
+            health+=INCREASE_HEALTH;
         }
     }
     /**
      * Controlla se un batterio è fecondo
      * @return True se è fecondo, false altrimenti
      */
-    public final boolean fecondo() {
-        if (duplica == 0 && salute > BUONA_SALUTE) {
-			duplica = BUONA_SALUTE;
+    public final boolean isReadyForCloning() {
+        if (loopsForCloning == 0 && health > GOOD_HEALTH) {
+			loopsForCloning = REPRODUCTIVE_LOOPS;
 			return true;
 		}
         return false;
@@ -98,8 +116,8 @@ abstract public class Batterio implements Cloneable {
      * Controlla se un batterio è morto o perchè troppo vecchio o perchè non ha abbastanza salute
      * @return True se è morto, false altrimenti
      */
-    public final boolean morto() {
-        if (salute<1 || eta < 1)
+    public final boolean isDead() {
+        if (health < 1 || age < 1)
             return true;
         else
             return false;
@@ -108,23 +126,23 @@ abstract public class Batterio implements Cloneable {
      * Esegue le mosse del batterio
      */
     public final void run() {
-        if (this.morto())
+        if (this.isDead())
             return;
-        int xprec = getX();
-        int yprec = getY();
+        int xPrevious = getX(), yPrevious = getY();
         try {
-            this.sposta(); //Calcolo le nuove coordinate del batterio
+            this.move(); //Calcolo le nuove coordinate del batterio
         } catch (Exception e) {
-            System.out.println(e);
+            System.out.println("Exception: " + e + " -> " + this.getClass().getName());
+            this.health=0;
         }
-        this.mangia(); //Mangia l'eventuale cibo
-        eta--; //Faccio invecchiare il batterio
+        this.eat(); //Mangia l'eventuale cibo
+        age--; //In batterio invecchia
         //Diminuisce la sua salute in funzione dello spostamento effettuato secondo una metrica Manhattan
-        int sforzo = Math.abs(getX()-xprec) + Math.abs(getY()-yprec);
-        salute-=sforzo;
+        int effort = Math.abs(getX()-xPrevious) + Math.abs(getY()-yPrevious);
+        health-=effort;
         //Diminuisce il tempo per la riproduzione, solo se si è mosso, altrimenti no
-        if (duplica>0 && sforzo!=0)
-            duplica--;
+        if (loopsForCloning>0 && effort!=0)
+            loopsForCloning--;
     }
     /**
      * @return x
@@ -141,38 +159,26 @@ abstract public class Batterio implements Cloneable {
     /**
      * @return il colore
      */
-    public final Color getColore() {
-        return colore;
-    }
-    /**
-     * @return la larghezza del terreno
-     */
-    protected final int getFoodWidth() {
-        return Food.getWidth();
-    }
-    /**
-     * @return l'altezza del terreno
-     */
-    protected final int getFoodHeight() {
-        return Food.getHeight();
+    public final Color getColor() {
+        return color;
     }
     /**
      * @return età
      */
     public final int getAge() {
-        return this.eta;
+        return this.age;
     }
     /**
      * @return salute
      */
     public final int getHealth() {
-        return this.salute;
+        return this.health;
     }
     /**
-     * @return quanti cicli mancano alla duplicazione
+     * @return quanti cicli mancano alla clonazione
      */
-    public final int getDuplica() {
-        return this.duplica;
+    public final int getLoopsForCloning() {
+        return this.loopsForCloning;
     }
     /**
      * Clona il batterio in senso biologico
@@ -182,9 +188,9 @@ abstract public class Batterio implements Cloneable {
     @Override
     protected Batterio clone() throws CloneNotSupportedException {
         Batterio b = (Batterio)super.clone();
-        b.eta=(int)(Math.random()*MAX_LIFE)+500;
-        b.salute=(int)(Math.random()*MAX_HEALTH)+200;
-        b.duplica=CICLO_RIPRODUTTIVO+(int)(Math.random()*100);
+        b.age = (int)(Math.random()*RANDOM_INITIAL_LIFE)+INITIAL_LIFE;
+        b.health = (int)(Math.random()*RANDOM_INITIAL_HEALTH)+INITIAL_HEALTH;
+        b.loopsForCloning = INITIAL_REPRODUCTIVE_LOOPS + (int)(Math.random()*RANDOM_REPRODUCTIVE_LOOPS);
         return b;
     }
 }

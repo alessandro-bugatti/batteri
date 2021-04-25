@@ -39,29 +39,22 @@ public class Terrain extends JPanel {
             g.setColor(sfondo);
             g.fillRect(batterio.getX(), batterio.getY(), 2, 2);
             String tipo_batterio = batterio.getClass().getName().replace("batteri_figli.", "");
-            try {
-                batterio.run();
-            } catch(Exception e) {
-                //I batteri che producono eccezioni vengono eliminati
-                System.out.println("Eccezione: " + e + " -> " + batterio.getClass().getName());
+            batterio.run();
+            if (batterio.isDead()) {
                 numeroBatteri.put(tipo_batterio, numeroBatteri.get(tipo_batterio)-1);
                 i.remove();
             }
-            if (batterio.morto()) {
-                numeroBatteri.put(tipo_batterio, numeroBatteri.get(tipo_batterio)-1);
-                i.remove();
-            }
-            else if (batterio.fecondo()) {
+            else if (batterio.isReadyForCloning()) {
                 try {
                     Batterio b = (Batterio) batterio.clone();
                     babies.add(b);
                     numeroBatteri.put(tipo_batterio, numeroBatteri.get(tipo_batterio)+1);
-                } catch (CloneNotSupportedException e) {
+                } catch (Exception e) {
                     System.out.println(e);
                 }
             }
             else {
-                g.setColor(batterio.getColore());
+                g.setColor(batterio.getColor());
                 g.fillRect(batterio.getX(), batterio.getY(), 3, 3);
             }
         }
