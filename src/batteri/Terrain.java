@@ -67,6 +67,6 @@ public class Terrain extends JPanel {
                     g.fillRect(i, j, 2, 2);
     }
     public void toggleFood() {
-        food.squareDistribution(50, 500);
+        food.toggle();
     }
 }

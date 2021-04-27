@@ -24,14 +24,30 @@ public class Food {
      */
     private static Random random;
     /**
+     * Tipo di distribuzione da effettuare
+     */
+    private static Distribution distributionType;
+    /**
+     * Quantità di cibo prodotta, nei modi definiti in {distributionType}
+     */
+    private static int foodQuantity;
+    /**
+     * Contiene i vari tipi di distribuzione del cibo
+     */
+    public static enum Distribution {
+        square, corner, random
+    }
+    /**
      * @param w Larghezza della matrice
      * @param h Altezza della matrice
      */
-    private Food(int w, int h) {
+    private Food(int w, int h, Distribution dt, int foodQuantity) {
         width = w;
         height = h;
         food = new boolean[w][h];
         random = new Random();
+        Food.distributionType = dt;
+        Food.foodQuantity = foodQuantity;
     }
     /**
      * Distribuisce il cibo secondo una distribuzione
@@ -39,7 +55,7 @@ public class Food {
      * @param l lato del quadrato della distribuzione   
      * @param q quantità di cibo da distribuire
      */
-    public void squareDistribution(int l, int q) {
+    private void squareDistribution(int l, int q) {
         int randx = random.nextInt(width - l);
         int randy = random.nextInt(height - l);
         for (int i = 0; i < q; i++)
@@ -50,7 +66,7 @@ public class Food {
      * casuale
      * @param q quantità di cibo da distribuire
      */
-    public void randomDistribution(int q) {
+    private void randomDistribution(int q) {
         for (int i = 0; i < q; i++)
             food[random.nextInt(width-1)][random.nextInt(height-1)] = true;
     }
@@ -60,7 +76,7 @@ public class Food {
      * @param radius raggio del cerchio dove verrà distribuito il cibo
      * @param q quantità di cibo da distribuire
      */
-    public void cornerDistribution(int radius, int q) {
+    private void cornerDistribution(int radius, int q) {
         int x=0,y=0,dx=1,dy=1;
         int corner = random.nextInt(4);
         switch(corner){
@@ -91,6 +107,29 @@ public class Food {
         }
         for (int i = 0; i < q; i++)
             food[x + dx*random.nextInt(radius)][y + dy*random.nextInt(radius)] = true;
+    }
+    /**
+     * 
+     */
+    public void toggle() {
+        switch (Food.distributionType) {
+            case square:
+                this.squareDistribution(50, foodQuantity);
+                break;
+            case corner:
+                this.cornerDistribution(50, foodQuantity);
+                break;
+            default:
+                this.randomDistribution(foodQuantity);
+                break;
+        }
+    }
+    /**
+     * 
+     * @return 
+     */
+    public static Distribution getDistribution() {
+        return Food.distributionType;
     }
     /**
      * Controlla se c'è cibo in posizione x,y
@@ -136,6 +175,14 @@ public class Food {
          */
         private static int height;
         /**
+         * Tipo di distribuzione da effettuare
+         */
+        private static Distribution distributionType;
+        /**
+         * Quantità di cibo prodotta, nei modi definiti in {distributionType}
+         */
+        private static int foodQuantity;
+        /**
          * flag, true se l'oggetto è già stato istanziato
          */
         private static boolean istanziato = false;
@@ -147,14 +194,16 @@ public class Food {
          * Riferimento al cibo
          */
         private static Food riferimento = null;
-        public Builder (int w, int h) {
+        public Builder (int w, int h, Distribution dt, int fq) {
             width = w;
             height = h;
+            Builder.distributionType = dt;
+            Builder.foodQuantity = fq;
         }
         synchronized public Food build() throws NullPointerException {
             if (!istanziato) {
                 istanziato = true;
-                riferimento = new Food(width, height);
+                riferimento = new Food(width, height, distributionType, foodQuantity);
                 return riferimento;
             }
             return null;
