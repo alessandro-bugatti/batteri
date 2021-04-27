@@ -27,6 +27,8 @@ public class mainForm extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel jPanelResult;
     private javax.swing.JPanel jPanelTerrain;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTextArea jTextArea1;
     // End of variables declaration//GEN-END:variables
     private javax.swing.JLabel values[];
     private Terrain terrain;
@@ -39,7 +41,7 @@ public class mainForm extends javax.swing.JFrame {
     private HashMap<String,Color> coloreBatteri;
     private ArrayList<String> nomiBatteri;
     private static final int LARGHEZZA_PANNELLO_LATERALE = 300; 
-    private static final int ALTEZZA_BORDO = 30;
+    private static final int ALTEZZA_BORDO = 50;
     private static final int NUMEROBATTERIINIZIALI = 100;
     
     /**
@@ -58,7 +60,8 @@ public class mainForm extends javax.swing.JFrame {
             InvocationTargetException, IOException, URISyntaxException {
         initComponents();
         running = false;
-        Food food = new Food.Builder(1024,700).build();
+        //bisogni istanziare food prima dei batteri perchè è richiesto il suo riferimento quando si istanzia Batterio
+        Food food = new Food.Builder(1024,700,Food.Distribution.corner,500).build();
         inizializzaBatteri();
         terrain = new Terrain(food, batteri, jPanelTerrain.getBackground(),numeroBatteri);
         this.jPanelTerrain.add(terrain);
@@ -83,10 +86,9 @@ public class mainForm extends javax.swing.JFrame {
         });
         this.jPanelResult.add(btnStop);
         pack();
-        this.setSize(Food.getWidth()+ LARGHEZZA_PANNELLO_LATERALE, Food.getHeight()+ ALTEZZA_BORDO);
+        this.setSize(Food.getWidth()+ LARGHEZZA_PANNELLO_LATERALE, Food.getHeight() + ALTEZZA_BORDO);
         //Timer per l'aggiornamento della simulazione
-        ActionListener taskUpdateSimulation;
-        taskUpdateSimulation = (ActionEvent e) -> {
+        ActionListener taskUpdateSimulation = (ActionEvent e) -> {
             //Lo scopo di running è evitare che riparta un ciclo
             // di ridisegno del campo gara mentre ne è già in corso uno
             if (running) return;
@@ -98,8 +100,7 @@ public class mainForm extends javax.swing.JFrame {
         //timer.setInitialDelay(2000);        
         //timerUpdateSimulation.setRepeats(true);
         //Timer per l'aggiunta di cibo
-        ActionListener taskUpdateFood;
-        taskUpdateFood = (ActionEvent e) -> {
+        ActionListener taskUpdateFood = (ActionEvent e) -> {
             terrain.toggleFood();
         };
         timerUpdateFood = new Timer(1000, taskUpdateFood); 
@@ -107,8 +108,7 @@ public class mainForm extends javax.swing.JFrame {
         timerUpdateFood.setRepeats(true);
         //timerUpdateFood.start();
         //Timer per l'aggiornamento del pannello dei dati
-        ActionListener taskUpdateResult;
-        taskUpdateResult = (ActionEvent e) -> {
+        ActionListener taskUpdateResult = (ActionEvent e) -> {
             for (int i = 0; i < nomiBatteri.size(); i++) {
                 values[i].setText(nomiBatteri.get(i)+" "+numeroBatteri.get(nomiBatteri.get(i)));
                 if (numeroBatteri.get(nomiBatteri.get(i))>0)
@@ -174,7 +174,11 @@ public class mainForm extends javax.swing.JFrame {
             Color color = colori.get(j);
             try {
                 Batterio temp = (Batterio) Class.forName("batteri_figli." + nomiBatteri.get(j))
-                        .getConstructor(Integer.TYPE,Integer.TYPE,Color.class)
+                        .getConstructor(
+                                Integer.TYPE, 
+                                Integer.TYPE, 
+                                Color.class 
+                        )
                         .newInstance(
                                 r.nextInt(Food.getWidth()), 
                                 r.nextInt(Food.getHeight()), 
@@ -182,7 +186,8 @@ public class mainForm extends javax.swing.JFrame {
                         );
             } catch (IllegalArgumentException e) {
                 //System.out.println(nomiBatteri.get(j)+": "+e);
-            } catch (Exception e) {
+            } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | 
+                    NoSuchMethodException | SecurityException | InvocationTargetException e) {
                 System.out.println(nomiBatteri.get(j)+" has been removed ("+e+')');
                 nomiBatteri.remove(j);
             }
@@ -194,7 +199,11 @@ public class mainForm extends javax.swing.JFrame {
                 Color color = colori.get(j);
                 try {
                     batteri.add((Batterio)Class.forName("batteri_figli." + nomiBatteri.get(j))
-                        .getConstructor(Integer.TYPE,Integer.TYPE,Color.class)
+                        .getConstructor(
+                                Integer.TYPE, 
+                                Integer.TYPE, 
+                                Color.class
+                        )
                         .newInstance(
                                 r.nextInt(Food.getWidth()), 
                                 r.nextInt(Food.getHeight()), 
@@ -204,8 +213,10 @@ public class mainForm extends javax.swing.JFrame {
                     long start = System.nanoTime();
                     batteri.get(j).run();
                     h[j] += System.nanoTime()-start;
-                } catch (Exception e) {
-                    
+                } catch (IllegalArgumentException e) {
+                    System.out.println(nomiBatteri.get(j)+": "+e);
+                } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | 
+                        NoSuchMethodException | SecurityException | InvocationTargetException e) {
                     System.out.println(nomiBatteri.get(j)+" has been removed ("+e+')');
                     nomiBatteri.remove(j);
                     j--;
@@ -230,12 +241,18 @@ public class mainForm extends javax.swing.JFrame {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTextArea1 = new javax.swing.JTextArea();
         jPanelResult = new javax.swing.JPanel();
         jPanelTerrain = new javax.swing.JPanel();
 
+        jTextArea1.setColumns(20);
+        jTextArea1.setRows(5);
+        jScrollPane1.setViewportView(jTextArea1);
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Bacteria");
-        setPreferredSize(new java.awt.Dimension(0, 0));
         setResizable(false);
 
         jPanelResult.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
