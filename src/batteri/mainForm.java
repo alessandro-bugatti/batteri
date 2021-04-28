@@ -193,15 +193,15 @@ public class mainForm extends javax.swing.JFrame {
                     batteri.remove(i--);
             nomiBatteri.remove(nomiBatteri.size()-1);
         }
-        System.out.println(numeroBatteri.size()+" bacteria approved: ");
-        //stampa il tempo medio (in nanosecondi) di esecuzione di ciascun batterio
-        for (int i=0; i<nomiBatteri.size(); i++)
-            System.out.println(h[i]/NUMEROBATTERIINIZIALI+"\tns ("+nomiBatteri.get(i)+')');
         //inserimento dei dati nelle due hashmap
         for (int i=0; i<nomiBatteri.size(); i++) {
             coloreBatteri.put(nomiBatteri.get(i), colori.get(i));
             numeroBatteri.put(nomiBatteri.get(i), NUMEROBATTERIINIZIALI);
         }
+        System.out.println(numeroBatteri.size()+" bacteria approved: ");
+        //stampa il tempo medio (in nanosecondi) di esecuzione di ciascun batterio
+        for (int i=0; i<nomiBatteri.size(); i++)
+            System.out.println(h[i]/NUMEROBATTERIINIZIALI+"\tns ("+nomiBatteri.get(i)+')');
     }
     /**
      * This method is called from within the constructor to initialize the form.

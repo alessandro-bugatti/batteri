@@ -57,10 +57,6 @@ abstract public class Batterio implements Cloneable {
     */
     protected int y;
     /**
-     * Colore del batterio, uguale per qualli dello stesso tipo
-     */
-    //private final Color color;
-    /**
      * riferimento al cibo
      */
     private static final Food food;
