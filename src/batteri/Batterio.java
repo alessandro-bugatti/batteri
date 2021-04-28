@@ -1,5 +1,4 @@
 package batteri;
-import java.awt.Color;
 
 /**
  * Classe astratta genitore della gerarchia dei batteri.
@@ -28,7 +27,7 @@ abstract public class Batterio implements Cloneable {
      */
     private final static int INCREASE_HEALTH = 100;
     /**
-     * I cicli riproduttivi iniziali del batterio sono composti da INITIAL_HEALTH sommato 
+     * I cicli riproduttivi iniziali del batterio sono composti da INITIAL_REPRODUCTIVE_LOOPS sommato 
      * ad un numero casuale compreso tra zero e RANDOM_REPRODUCTIVE_LOOPS
      */
     private final static int INITIAL_REPRODUCTIVE_LOOPS = 500;
@@ -60,21 +59,17 @@ abstract public class Batterio implements Cloneable {
     /**
      * Colore del batterio, uguale per qualli dello stesso tipo
      */
-    private final Color color;
+    //private final Color color;
     /**
      * riferimento al cibo
      */
     private static final Food food;
     /**
      * 
-     * @param x coordinata x iniziale
-     * @param y coordinata y iniziale
-     * @param c colore del batterio
      */
-    public Batterio(int x, int y, Color c) {
-        this.x = x;
-        this.y = y;
-        this.color = c;
+    public Batterio() {
+        this.x = (int)(Math.random()*Food.getWidth());
+        this.y = (int)(Math.random()*Food.getHeight());
         this.age = (int)(Math.random()*RANDOM_INITIAL_LIFE)+INITIAL_LIFE;
         this.health = (int)(Math.random()*RANDOM_INITIAL_HEALTH)+INITIAL_HEALTH;
         this.loopsForCloning = INITIAL_REPRODUCTIVE_LOOPS + (int)(Math.random()*RANDOM_REPRODUCTIVE_LOOPS);
@@ -132,7 +127,7 @@ abstract public class Batterio implements Cloneable {
         try {
             this.move(); //Calcolo le nuove coordinate del batterio
         } catch (Exception e) {
-            System.out.println("Exception: " + e + " -> " + this.getClass().getName());
+            System.out.println(e + " from " + this.getClass().getSimpleName());
             this.health=0;
         }
         this.eat(); //Mangia l'eventuale cibo
@@ -155,12 +150,6 @@ abstract public class Batterio implements Cloneable {
      */
     public final int getY() {
         return y;
-    }
-    /**
-     * @return il colore
-     */
-    public final Color getColor() {
-        return color;
     }
     /**
      * @return età

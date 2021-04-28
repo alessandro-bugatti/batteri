@@ -206,6 +206,11 @@ public class Food {
             Builder.distributionType = dt;
             Builder.foodQuantity = fq;
         }
+        /**
+         * crea il riferimento al cibo e lo ritorna, può essere chiamato una sola volta
+         * @return riferimento al cibo
+         * @throws NullPointerException 
+         */
         synchronized public Food build() throws NullPointerException {
             if (!istanziato) {
                 istanziato = true;
@@ -214,8 +219,13 @@ public class Food {
             }
             return null;
         }
+        /**
+         * ritorna il riferimento al cibo ma può essere chiamato una sola volta
+         * @return riferimento al cibo
+         * @throws NullPointerException 
+         */
         synchronized static public Food getFood() throws NullPointerException {
-            if (istanziato && riferibile) {
+            if (riferibile) {
                 riferibile = false;
                 return riferimento;
             }
