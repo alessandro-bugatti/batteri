@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -31,12 +30,10 @@ public class mainForm extends javax.swing.JFrame {
     private javax.swing.JTextArea jTextArea1;
     // End of variables declaration//GEN-END:variables
     private javax.swing.JLabel values[];
-    private Terrain terrain;
     private javax.swing.Timer timerUpdateSimulation;
     private javax.swing.Timer timerUpdateFood;
     private javax.swing.Timer timerUpdateResult;
     private LinkedList<Batterio> batteri;
-    private boolean running;
     private HashMap<String,Integer> numeroBatteri;
     private HashMap<String,Color> coloreBatteri;
     private ArrayList<String> nomiBatteri;
@@ -59,18 +56,16 @@ public class mainForm extends javax.swing.JFrame {
             InstantiationException, IllegalAccessException, IllegalArgumentException, 
             InvocationTargetException, IOException, URISyntaxException {
         initComponents();
-        running = false;
-        //bisogni istanziare food prima dei batteri perchè è richiesto il suo riferimento quando si istanzia Batterio
-        Food food = new Food.Builder(1024,700,Food.Distribution.corner,500).build();
+        Food food = new Food.Builder(1024,700,Food.Distribution.square,500).build();
         inizializzaBatteri();
-        terrain = new Terrain(food, batteri, jPanelTerrain.getBackground(),numeroBatteri);
+        Terrain terrain = new Terrain (food,batteri,jPanelTerrain.getBackground(),numeroBatteri,coloreBatteri);
         this.jPanelTerrain.add(terrain);
         values = new javax.swing.JLabel[10];
         for (int i = 0; i < nomiBatteri.size(); i++) {
             values[i] = new javax.swing.JLabel(nomiBatteri.get(i)+" "+numeroBatteri.get(nomiBatteri.get(i)));
             values[i].setForeground(coloreBatteri.get(nomiBatteri.get(i)));
             this.jPanelResult.add(values[i]);
-        } 
+        }
         javax.swing.JButton btnStart = new javax.swing.JButton("Start");
         btnStart.addActionListener((ActionEvent e) -> {
             timerUpdateSimulation.start();
@@ -89,19 +84,18 @@ public class mainForm extends javax.swing.JFrame {
         this.setSize(Food.getWidth()+ LARGHEZZA_PANNELLO_LATERALE, Food.getHeight() + ALTEZZA_BORDO);
         //Timer per l'aggiornamento della simulazione
         ActionListener taskUpdateSimulation = (ActionEvent e) -> {
-            //Lo scopo di running è evitare che riparta un ciclo
+            //necessario per evitare che riparta un ciclo
             // di ridisegno del campo gara mentre ne è già in corso uno
-            if (running) return;
-            running = true;
-            terrain.repaint();
-            running = false;
+            synchronized (terrain) {
+                terrain.repaint(); //ridisegno del campo di gara
+            }
         };
         timerUpdateSimulation = new Timer(50, taskUpdateSimulation); 
         //timer.setInitialDelay(2000);        
         //timerUpdateSimulation.setRepeats(true);
         //Timer per l'aggiunta di cibo
         ActionListener taskUpdateFood = (ActionEvent e) -> {
-            terrain.toggleFood();
+            food.toggle();
         };
         timerUpdateFood = new Timer(1000, taskUpdateFood); 
         //timer.setInitialDelay(2000);        
@@ -132,6 +126,7 @@ public class mainForm extends javax.swing.JFrame {
             path = new File(this.getClass().getResource("../batteri_figli/Tontino.class")
                     .toURI()).getParentFile().toPath();
         } catch (Exception e) {
+            System.out.println("Tontino doesn't exist ("+e+')');
             path = Paths.get(new File( "." ).getCanonicalPath()+"/build/classes/batteri_figli/");
         }
         files = Files.walk(path)
@@ -141,6 +136,8 @@ public class mainForm extends javax.swing.JFrame {
             .collect(Collectors.toList());
         for(String nome:files)
             nomi.add(nome.replace(".class", ""));
+        if (nomi.isEmpty())
+            System.out.println("no classes found in "+path);
         return nomi;
     }
     /**
@@ -150,7 +147,6 @@ public class mainForm extends javax.swing.JFrame {
             InstantiationException, IllegalAccessException, IllegalArgumentException, 
             InvocationTargetException, IOException, URISyntaxException {
         batteri = new LinkedList<>();
-        Random r = new Random();
         numeroBatteri = new HashMap<>();
         coloreBatteri = new HashMap<>();
         nomiBatteri = new ArrayList<>();
@@ -168,70 +164,44 @@ public class mainForm extends javax.swing.JFrame {
         colori.add(Color.BLACK);
         colori.add(Color.LIGHT_GRAY);
         nomiBatteri = (ArrayList<String>)recuperaNomi();
-        /* Cerca classi non valide (tutte le classi che non ereditano da Batterio)
-        appartenenti alla lista nomiBatteri, quindi vengono eliminate */
-        for (int j=0; j<nomiBatteri.size(); j++) {
-            Color color = colori.get(j);
-            try {
-                Batterio temp = (Batterio) Class.forName("batteri_figli." + nomiBatteri.get(j))
-                        .getConstructor(
-                                Integer.TYPE, 
-                                Integer.TYPE, 
-                                Color.class 
-                        )
-                        .newInstance(
-                                r.nextInt(Food.getWidth()), 
-                                r.nextInt(Food.getHeight()), 
-                                color
-                        );
-            } catch (IllegalArgumentException e) {
-                //System.out.println(nomiBatteri.get(j)+": "+e);
-            } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | 
-                    NoSuchMethodException | SecurityException | InvocationTargetException e) {
-                System.out.println(nomiBatteri.get(j)+" has been removed ("+e+')');
-                nomiBatteri.remove(j);
-            }
-        }
         //array temporaneo per contenere i tempi di esecuzione dei batteri, per effettuare la media
         int h[] = new int[nomiBatteri.size()];
+        /* Cerca classi non valide (tutte le classi che non ereditano da Batterio)
+        appartenenti alla lista nomiBatteri, quindi vengono eliminate */
         for (int i = 0; i < NUMEROBATTERIINIZIALI; i++) {
             for (int j=0; j<nomiBatteri.size(); j++) {
-                Color color = colori.get(j);
                 try {
                     batteri.add((Batterio)Class.forName("batteri_figli." + nomiBatteri.get(j))
-                        .getConstructor(
-                                Integer.TYPE, 
-                                Integer.TYPE, 
-                                Color.class
-                        )
-                        .newInstance(
-                                r.nextInt(Food.getWidth()), 
-                                r.nextInt(Food.getHeight()), 
-                                color
-                        ));
+                        .getConstructor()
+                        .newInstance());
                     //Recupero dei tempi di esecuzione
                     long start = System.nanoTime();
                     batteri.get(j).run();
                     h[j] += System.nanoTime()-start;
-                } catch (IllegalArgumentException e) {
-                    System.out.println(nomiBatteri.get(j)+": "+e);
-                } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | 
-                        NoSuchMethodException | SecurityException | InvocationTargetException e) {
+                } catch (Exception e) {
                     System.out.println(nomiBatteri.get(j)+" has been removed ("+e+')');
                     nomiBatteri.remove(j);
                     j--;
                 }
-                
             }
         }
+        //rimuove alcuni batteri se non ci sono colori sufficienti per rappresentarli
+        while (nomiBatteri.size()>colori.size()) {
+            System.out.println('('+nomiBatteri.get(nomiBatteri.size()-1)+") removed for lack of colors");
+            for (int i=0; i<batteri.size(); i++)
+                if (batteri.get(i).getClass().getSimpleName().equals(nomiBatteri.get(nomiBatteri.size()-1)))
+                    batteri.remove(i--);
+            nomiBatteri.remove(nomiBatteri.size()-1);
+        }
+        //inserimento dei dati nelle due hashmap
+        for (int i=0; i<nomiBatteri.size(); i++) {
+            coloreBatteri.put(nomiBatteri.get(i), colori.get(i));
+            numeroBatteri.put(nomiBatteri.get(i), NUMEROBATTERIINIZIALI);
+        }
+        System.out.println(numeroBatteri.size()+" bacteria approved: ");
         //stampa il tempo medio (in nanosecondi) di esecuzione di ciascun batterio
         for (int i=0; i<nomiBatteri.size(); i++)
             System.out.println(h[i]/NUMEROBATTERIINIZIALI+"\tns ("+nomiBatteri.get(i)+')');
-        for (int j=0; j<nomiBatteri.size(); j++) {
-            Color c = colori.get(j);
-            coloreBatteri.put(nomiBatteri.get(j), c);
-            numeroBatteri.put(nomiBatteri.get(j), NUMEROBATTERIINIZIALI);
-        }
     }
     /**
      * This method is called from within the constructor to initialize the form.
@@ -289,17 +259,14 @@ public class mainForm extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    new mainForm().setVisible(true);
-                } catch (ClassNotFoundException | NoSuchMethodException | 
-                        InstantiationException | IllegalAccessException | 
-                        IllegalArgumentException | InvocationTargetException | 
-                        IOException | URISyntaxException ex) {
-                    Logger.getLogger(mainForm.class.getName()).log(Level.SEVERE, null, ex);
-                }
+        java.awt.EventQueue.invokeLater(() -> {
+            try {
+                new mainForm().setVisible(true);
+            } catch (ClassNotFoundException | NoSuchMethodException |
+                    InstantiationException | IllegalAccessException |
+                    IllegalArgumentException | InvocationTargetException |
+                    IOException | URISyntaxException ex) {
+                Logger.getLogger(mainForm.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
     }

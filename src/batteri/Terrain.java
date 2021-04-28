@@ -19,11 +19,19 @@ public class Terrain extends JPanel {
     private final Color sfondo;
     private final LinkedList<Batterio> batteri;
     private final HashMap<String,Integer> numeroBatteri;
-    public Terrain(Food f, LinkedList<Batterio> l, Color s,HashMap<String,Integer> numeroBatteri) {
+    private final HashMap<String, Color> coloreBatteri;
+    public Terrain (
+            Food f, 
+            LinkedList<Batterio> l, 
+            Color s, 
+            HashMap<String,Integer> numeroBatteri,
+            HashMap<String,Color> coloreBatteri
+    ) {
+        food = f;
         batteri = l;
         sfondo = s;
         this.numeroBatteri = numeroBatteri; 
-        food = f;
+        this.coloreBatteri = coloreBatteri;
     }
     @Override
     public Dimension getPreferredSize() {
@@ -38,23 +46,22 @@ public class Terrain extends JPanel {
             Batterio batterio = i.next();
             g.setColor(sfondo);
             g.fillRect(batterio.getX(), batterio.getY(), 2, 2);
-            String tipo_batterio = batterio.getClass().getName().replace("batteri_figli.", "");
             batterio.run();
             if (batterio.isDead()) {
-                numeroBatteri.put(tipo_batterio, numeroBatteri.get(tipo_batterio)-1);
+                String tipoBatterio = batterio.getClass().getSimpleName();
+                numeroBatteri.put(tipoBatterio, numeroBatteri.get(tipoBatterio)-1);
                 i.remove();
-            }
-            else if (batterio.isReadyForCloning()) {
+            } else if (batterio.isReadyForCloning()) {
                 try {
-                    Batterio b = (Batterio) batterio.clone();
-                    babies.add(b);
-                    numeroBatteri.put(tipo_batterio, numeroBatteri.get(tipo_batterio)+1);
+                    Batterio clone = (Batterio) batterio.clone();
+                    String cloneType = clone.getClass().getSimpleName();
+                    babies.add(clone);
+                    numeroBatteri.put(cloneType, numeroBatteri.get(cloneType)+1);
                 } catch (Exception e) {
-                    System.out.println(e);
+                    System.out.println(e+" (during cloning)");
                 }
-            }
-            else {
-                g.setColor(batterio.getColor());
+            } else {
+                g.setColor(coloreBatteri.get(batterio.getClass().getSimpleName()));
                 g.fillRect(batterio.getX(), batterio.getY(), 3, 3);
             }
         }
@@ -65,8 +72,5 @@ public class Terrain extends JPanel {
             for (int j = 0; j < Food.getHeight(); j++)
                 if (Food.isFood(i, j))
                     g.fillRect(i, j, 2, 2);
-    }
-    public void toggleFood() {
-        food.toggle();
     }
 }
