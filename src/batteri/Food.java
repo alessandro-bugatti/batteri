@@ -32,6 +32,10 @@ public class Food {
      */
     private static int foodQuantity;
     /**
+     * Grandezza in pixel dei quadrati di cibo
+     */
+    private static final int foodDimension = 50;
+    /**
      * Contiene i vari tipi di distribuzione del cibo
      */
     public static enum Distribution {
@@ -50,8 +54,7 @@ public class Food {
         Food.foodQuantity = foodQuantity;
     }
     /**
-     * Distribuisce il cibo secondo una distribuzione
-     * quadrata
+     * Distribuisce il cibo secondo una distribuzione quadrata
      * @param l lato del quadrato della distribuzione   
      * @param q quantità di cibo da distribuire
      */
@@ -62,8 +65,7 @@ public class Food {
             food[random.nextInt(l) + randx][random.nextInt(l) + randy] = true;
     }
     /**
-     * Distribuisce il cibo secondo una distribuzione
-     * casuale
+     * Distribuisce il cibo secondo una distribuzione casuale
      * @param q quantità di cibo da distribuire
      */
     private void randomDistribution(int q) {
@@ -71,8 +73,7 @@ public class Food {
             food[random.nextInt(width-1)][random.nextInt(height-1)] = true;
     }
     /**
-     * Distribuisce il cibo secondo una distribuzione
-     * che distribuisce solo negli angoli
+     * Distribuisce il cibo secondo una distribuzione che distribuisce solo negli angoli
      * @param radius raggio del cerchio dove verrà distribuito il cibo
      * @param q quantità di cibo da distribuire
      */
@@ -114,10 +115,10 @@ public class Food {
     public void toggle() {
         switch (Food.distributionType) {
             case square:
-                this.squareDistribution(50, foodQuantity);
+                this.squareDistribution(foodDimension, foodQuantity);
                 break;
             case corner:
-                this.cornerDistribution(50, foodQuantity);
+                this.cornerDistribution(foodDimension, foodQuantity);
                 break;
             default:
                 this.randomDistribution(foodQuantity);
@@ -165,6 +166,11 @@ public class Food {
     public static int getHeight() {
         return height;
     }
+    /**
+     * Classe utilizzata per creare oggetti di tipo Food in modo tale che
+     * si possa creare solo un oggetto di questo tipo e si possa richiedere il riferimento
+     * a quell'oggetto una volta soltanto
+     */
     public static final class Builder {
         /**
          * Larghezza della matrice
