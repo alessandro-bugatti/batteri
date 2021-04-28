@@ -36,7 +36,6 @@ public class mainForm extends javax.swing.JFrame {
     private javax.swing.Timer timerUpdateFood;
     private javax.swing.Timer timerUpdateResult;
     private LinkedList<Batterio> batteri;
-    private boolean running;
     private HashMap<String,Integer> numeroBatteri;
     private HashMap<String,Color> coloreBatteri;
     private ArrayList<String> nomiBatteri;
@@ -59,11 +58,15 @@ public class mainForm extends javax.swing.JFrame {
             InstantiationException, IllegalAccessException, IllegalArgumentException, 
             InvocationTargetException, IOException, URISyntaxException {
         initComponents();
-        running = false;
-        //bisogni istanziare food prima dei batteri perchè è richiesto il suo riferimento quando si istanzia Batterio
-        Food food = new Food.Builder(1024,700,Food.Distribution.corner,500).build();
+        Food food = new Food.Builder(1024,700,Food.Distribution.square,500).build();
         inizializzaBatteri();
-        terrain = new Terrain(food, batteri, jPanelTerrain.getBackground(),numeroBatteri);
+        terrain = new Terrain(
+                food, 
+                batteri, 
+                jPanelTerrain.getBackground(), 
+                numeroBatteri,
+                coloreBatteri
+        );
         this.jPanelTerrain.add(terrain);
         values = new javax.swing.JLabel[10];
         for (int i = 0; i < nomiBatteri.size(); i++) {
@@ -89,19 +92,18 @@ public class mainForm extends javax.swing.JFrame {
         this.setSize(Food.getWidth()+ LARGHEZZA_PANNELLO_LATERALE, Food.getHeight() + ALTEZZA_BORDO);
         //Timer per l'aggiornamento della simulazione
         ActionListener taskUpdateSimulation = (ActionEvent e) -> {
-            //Lo scopo di running è evitare che riparta un ciclo
+            //necessario per evitare che riparta un ciclo
             // di ridisegno del campo gara mentre ne è già in corso uno
-            if (running) return;
-            running = true;
-            terrain.repaint();
-            running = false;
+            synchronized (terrain) {
+                terrain.repaint();
+            }
         };
         timerUpdateSimulation = new Timer(50, taskUpdateSimulation); 
         //timer.setInitialDelay(2000);        
         //timerUpdateSimulation.setRepeats(true);
         //Timer per l'aggiunta di cibo
         ActionListener taskUpdateFood = (ActionEvent e) -> {
-            terrain.toggleFood();
+            food.toggle();
         };
         timerUpdateFood = new Timer(1000, taskUpdateFood); 
         //timer.setInitialDelay(2000);        
@@ -168,32 +170,10 @@ public class mainForm extends javax.swing.JFrame {
         colori.add(Color.BLACK);
         colori.add(Color.LIGHT_GRAY);
         nomiBatteri = (ArrayList<String>)recuperaNomi();
-        /* Cerca classi non valide (tutte le classi che non ereditano da Batterio)
-        appartenenti alla lista nomiBatteri, quindi vengono eliminate */
-        for (int j=0; j<nomiBatteri.size(); j++) {
-            Color color = colori.get(j);
-            try {
-                Batterio temp = (Batterio) Class.forName("batteri_figli." + nomiBatteri.get(j))
-                        .getConstructor(
-                                Integer.TYPE, 
-                                Integer.TYPE, 
-                                Color.class 
-                        )
-                        .newInstance(
-                                r.nextInt(Food.getWidth()), 
-                                r.nextInt(Food.getHeight()), 
-                                color
-                        );
-            } catch (IllegalArgumentException e) {
-                //System.out.println(nomiBatteri.get(j)+": "+e);
-            } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | 
-                    NoSuchMethodException | SecurityException | InvocationTargetException e) {
-                System.out.println(nomiBatteri.get(j)+" has been removed ("+e+')');
-                nomiBatteri.remove(j);
-            }
-        }
         //array temporaneo per contenere i tempi di esecuzione dei batteri, per effettuare la media
         int h[] = new int[nomiBatteri.size()];
+        /* Cerca classi non valide (tutte le classi che non ereditano da Batterio)
+        appartenenti alla lista nomiBatteri, quindi vengono eliminate */
         for (int i = 0; i < NUMEROBATTERIINIZIALI; i++) {
             for (int j=0; j<nomiBatteri.size(); j++) {
                 Color color = colori.get(j);
@@ -201,13 +181,11 @@ public class mainForm extends javax.swing.JFrame {
                     batteri.add((Batterio)Class.forName("batteri_figli." + nomiBatteri.get(j))
                         .getConstructor(
                                 Integer.TYPE, 
-                                Integer.TYPE, 
-                                Color.class
+                                Integer.TYPE
                         )
                         .newInstance(
                                 r.nextInt(Food.getWidth()), 
-                                r.nextInt(Food.getHeight()), 
-                                color
+                                r.nextInt(Food.getHeight())
                         ));
                     //Recupero dei tempi di esecuzione
                     long start = System.nanoTime();
@@ -215,13 +193,13 @@ public class mainForm extends javax.swing.JFrame {
                     h[j] += System.nanoTime()-start;
                 } catch (IllegalArgumentException e) {
                     System.out.println(nomiBatteri.get(j)+": "+e);
-                } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | 
-                        NoSuchMethodException | SecurityException | InvocationTargetException e) {
+                } catch (ClassNotFoundException | IllegalAccessException | 
+                        InstantiationException | NoSuchMethodException |
+                        SecurityException | InvocationTargetException e) {
                     System.out.println(nomiBatteri.get(j)+" has been removed ("+e+')');
                     nomiBatteri.remove(j);
                     j--;
                 }
-                
             }
         }
         //stampa il tempo medio (in nanosecondi) di esecuzione di ciascun batterio
