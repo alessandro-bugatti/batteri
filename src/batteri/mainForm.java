@@ -84,6 +84,8 @@ public class mainForm extends javax.swing.JFrame {
         this.setSize(Food.getWidth()+ LARGHEZZA_PANNELLO_LATERALE, Food.getHeight() + ALTEZZA_BORDO);
         //Timer per l'aggiornamento della simulazione
         ActionListener taskUpdateSimulation = (ActionEvent e) -> {
+            //necessario per evitare che riparta un ciclo
+            // di ridisegno del campo gara mentre ne è già in corso uno
             synchronized (terrain) {
                 terrain.repaint(); //ridisegno del campo di gara
             }
@@ -191,16 +193,15 @@ public class mainForm extends javax.swing.JFrame {
                     batteri.remove(i--);
             nomiBatteri.remove(nomiBatteri.size()-1);
         }
-        //inserimento dei dati nelle due hashmap
-        for (int i=0; i<nomiBatteri.size(); i++) {
-            Color c = colori.get(i);
-            coloreBatteri.put(nomiBatteri.get(i), c);
-            numeroBatteri.put(nomiBatteri.get(i), NUMEROBATTERIINIZIALI);
-        }
         System.out.println(numeroBatteri.size()+" bacteria approved: ");
         //stampa il tempo medio (in nanosecondi) di esecuzione di ciascun batterio
         for (int i=0; i<nomiBatteri.size(); i++)
             System.out.println(h[i]/NUMEROBATTERIINIZIALI+"\tns ("+nomiBatteri.get(i)+')');
+        //inserimento dei dati nelle due hashmap
+        for (int i=0; i<nomiBatteri.size(); i++) {
+            coloreBatteri.put(nomiBatteri.get(i), colori.get(i));
+            numeroBatteri.put(nomiBatteri.get(i), NUMEROBATTERIINIZIALI);
+        }
     }
     /**
      * This method is called from within the constructor to initialize the form.
