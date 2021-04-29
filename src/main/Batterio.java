@@ -1,4 +1,4 @@
-package batteri;
+package main;
 
 /**
  * Classe astratta genitore della gerarchia dei batteri.
@@ -60,9 +60,6 @@ abstract public class Batterio implements Cloneable {
      * riferimento al cibo
      */
     private static final Food food;
-    /**
-     * 
-     */
     public Batterio() {
         this.x = (int)(Math.random()*Food.getWidth());
         this.y = (int)(Math.random()*Food.getHeight());
@@ -84,7 +81,7 @@ abstract public class Batterio implements Cloneable {
     protected abstract void move() throws Exception;
     /**
      * Se nella posizione occupata dal batterio c'è del cibo lo mangia 
-     * e incrementa la sua salute di DELTA
+     * e incrementa la sua salute di INCREASE_HEALTH
      */
     private void eat() {
         if (Food.isFood(x, y)) {
@@ -114,7 +111,7 @@ abstract public class Batterio implements Cloneable {
             return false;
     }
     /**
-     * Esegue le mosse del batterio
+     * Esegue il batterio
      */
     public final void run() {
         if (this.isDead())
