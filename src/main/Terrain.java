@@ -1,4 +1,4 @@
-package batteri;
+package main;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -39,17 +39,19 @@ public class Terrain extends JPanel {
     }
     @Override
     public void paintComponent(Graphics g) {
+        //colorare lo sfondo
         g.setColor(sfondo);
         g.fillRect(0, 0, this.getWidth(), this.getHeight());
-        LinkedList<Batterio> babies = new LinkedList<>();
+        LinkedList<Batterio> babies = new LinkedList<>(); //lista di batteri nati durante questo ciclo
         for(Iterator<Batterio> i = batteri.iterator(); i.hasNext();) {
             Batterio batterio = i.next();
+            //Ridisegnare dietro il batterio?!
             g.setColor(sfondo);
             g.fillRect(batterio.getX(), batterio.getY(), 2, 2);
-            batterio.run();
+            batterio.run(); //viene eseguito {batterio}
+            String bacteriaType = batterio.getClass().getSimpleName();
             if (batterio.isDead()) {
-                String tipoBatterio = batterio.getClass().getSimpleName();
-                numeroBatteri.put(tipoBatterio, numeroBatteri.get(tipoBatterio)-1);
+                numeroBatteri.put(bacteriaType, numeroBatteri.get(bacteriaType)-1);
                 i.remove();
             } else if (batterio.isReadyForCloning()) {
                 try {
@@ -61,7 +63,8 @@ public class Terrain extends JPanel {
                     System.out.println(e+" (during cloning)");
                 }
             } else {
-                g.setColor(coloreBatteri.get(batterio.getClass().getSimpleName()));
+                //Ridisegnare il batterio
+                g.setColor(coloreBatteri.get(bacteriaType));
                 g.fillRect(batterio.getX(), batterio.getY(), 3, 3);
             }
         }

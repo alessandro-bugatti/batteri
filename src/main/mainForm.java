@@ -1,7 +1,6 @@
-package batteri;
+package main;
 
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
@@ -11,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -26,8 +26,6 @@ public class mainForm extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel jPanelResult;
     private javax.swing.JPanel jPanelTerrain;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextArea jTextArea1;
     // End of variables declaration//GEN-END:variables
     private javax.swing.JLabel values[];
     private javax.swing.Timer timerUpdateSimulation;
@@ -60,12 +58,14 @@ public class mainForm extends javax.swing.JFrame {
         inizializzaBatteri();
         Terrain terrain = new Terrain (food,batteri,jPanelTerrain.getBackground(),numeroBatteri,coloreBatteri);
         this.jPanelTerrain.add(terrain);
+        //Creazione della lista dei nomi ed il numero dei batteri nella barra grafica
         values = new javax.swing.JLabel[10];
         for (int i = 0; i < nomiBatteri.size(); i++) {
             values[i] = new javax.swing.JLabel(nomiBatteri.get(i)+" "+numeroBatteri.get(nomiBatteri.get(i)));
             values[i].setForeground(coloreBatteri.get(nomiBatteri.get(i)));
             this.jPanelResult.add(values[i]);
         }
+        //codice eseguito quando viene premuto il pulsante 'start'
         javax.swing.JButton btnStart = new javax.swing.JButton("Start");
         btnStart.addActionListener((ActionEvent e) -> {
             timerUpdateSimulation.start();
@@ -73,6 +73,7 @@ public class mainForm extends javax.swing.JFrame {
             timerUpdateFood.start();
         });
         this.jPanelResult.add(btnStart);
+        //codice eseguito quando viene premuto il pulsante 'stop'
         javax.swing.JButton btnStop = new javax.swing.JButton("Stop");
         btnStop.addActionListener((ActionEvent e) -> {
             timerUpdateSimulation.stop();
@@ -83,37 +84,28 @@ public class mainForm extends javax.swing.JFrame {
         pack();
         this.setSize(Food.getWidth()+ LARGHEZZA_PANNELLO_LATERALE, Food.getHeight() + ALTEZZA_BORDO);
         //Timer per l'aggiornamento della simulazione
-        ActionListener taskUpdateSimulation = (ActionEvent e) -> {
+        timerUpdateSimulation = new Timer(50, (ActionEvent e) -> {
+            //20 aggiornmenti a secondo
             //necessario per evitare che riparta un ciclo
             // di ridisegno del campo gara mentre ne è già in corso uno
             synchronized (terrain) {
                 terrain.repaint(); //ridisegno del campo di gara
             }
-        };
-        timerUpdateSimulation = new Timer(50, taskUpdateSimulation); 
-        //timer.setInitialDelay(2000);        
-        //timerUpdateSimulation.setRepeats(true);
+        });
         //Timer per l'aggiunta di cibo
-        ActionListener taskUpdateFood = (ActionEvent e) -> {
+        timerUpdateFood = new Timer(1000,  (ActionEvent e) -> {
             food.toggle();
-        };
-        timerUpdateFood = new Timer(1000, taskUpdateFood); 
-        //timer.setInitialDelay(2000);        
-        timerUpdateFood.setRepeats(true);
-        //timerUpdateFood.start();
+        }); 
+        //timerUpdateFood.setRepeats(true);
         //Timer per l'aggiornamento del pannello dei dati
-        ActionListener taskUpdateResult = (ActionEvent e) -> {
+        timerUpdateResult = new Timer(1000, (ActionEvent e) -> {
             for (int i = 0; i < nomiBatteri.size(); i++) {
                 values[i].setText(nomiBatteri.get(i)+" "+numeroBatteri.get(nomiBatteri.get(i)));
                 if (numeroBatteri.get(nomiBatteri.get(i))>0)
                     System.out.print(numeroBatteri.get(nomiBatteri.get(i))+" ");
             }
             System.out.println();
-        };
-        timerUpdateResult = new Timer(1000, taskUpdateResult); 
-        //timer.setInitialDelay(2000);        
-        //timerUpdateResult.setRepeats(true);
-        //timerUpdateResult.start();
+        });
     }
     /**
      * Funzione che recupera il nome di tutti i batteri ereditati che si trovano
@@ -123,11 +115,11 @@ public class mainForm extends javax.swing.JFrame {
         List<String> nomi= new ArrayList<>(), files;
         Path path;
         try {
-            path = new File(this.getClass().getResource("../batteri_figli/Tontino.class")
+            path = new File(this.getClass().getResource("../children/dumb.class")
                     .toURI()).getParentFile().toPath();
         } catch (Exception e) {
-            System.out.println("Tontino doesn't exist ("+e+')');
-            path = Paths.get(new File( "." ).getCanonicalPath()+"/build/classes/batteri_figli/");
+            System.out.println("Dumb.class doesn't exist ("+e+')');
+            path = Paths.get(new File( "." ).getCanonicalPath()+"/build/classes/children/");
         }
         files = Files.walk(path)
             .map(Path::getFileName)
@@ -149,8 +141,8 @@ public class mainForm extends javax.swing.JFrame {
         batteri = new LinkedList<>();
         numeroBatteri = new HashMap<>();
         coloreBatteri = new HashMap<>();
-        nomiBatteri = new ArrayList<>();
-        ArrayList<Color> colori = new ArrayList<>();
+        nomiBatteri = (ArrayList<String>)recuperaNomi();
+        ArrayList <Color> colori = new ArrayList<>();
         colori.add(Color.RED);
         colori.add(Color.BLUE);
         colori.add(Color.GREEN);
@@ -163,7 +155,6 @@ public class mainForm extends javax.swing.JFrame {
         colori.add(Color.GRAY);
         colori.add(Color.BLACK);
         colori.add(Color.LIGHT_GRAY);
-        nomiBatteri = (ArrayList<String>)recuperaNomi();
         //array temporaneo per contenere i tempi di esecuzione dei batteri, per effettuare la media
         int h[] = new int[nomiBatteri.size()];
         /* Cerca classi non valide (tutte le classi che non ereditano da Batterio)
@@ -171,7 +162,7 @@ public class mainForm extends javax.swing.JFrame {
         for (int i = 0; i < NUMEROBATTERIINIZIALI; i++) {
             for (int j=0; j<nomiBatteri.size(); j++) {
                 try {
-                    batteri.add((Batterio)Class.forName("batteri_figli." + nomiBatteri.get(j))
+                    batteri.add((Batterio)Class.forName("children." + nomiBatteri.get(j))
                         .getConstructor()
                         .newInstance());
                     //Recupero dei tempi di esecuzione
@@ -193,12 +184,13 @@ public class mainForm extends javax.swing.JFrame {
                     batteri.remove(i--);
             nomiBatteri.remove(nomiBatteri.size()-1);
         }
+        Collections.sort(nomiBatteri); //ordina i batteri secondo un'ordine alfabetico
         //inserimento dei dati nelle due hashmap
         for (int i=0; i<nomiBatteri.size(); i++) {
             coloreBatteri.put(nomiBatteri.get(i), colori.get(i));
             numeroBatteri.put(nomiBatteri.get(i), NUMEROBATTERIINIZIALI);
         }
-        System.out.println(numeroBatteri.size()+" bacteria approved: ");
+        System.out.println(numeroBatteri.size()+" bacterium approved: ");
         //stampa il tempo medio (in nanosecondi) di esecuzione di ciascun batterio
         for (int i=0; i<nomiBatteri.size(); i++)
             System.out.println(h[i]/NUMEROBATTERIINIZIALI+"\tns ("+nomiBatteri.get(i)+')');
@@ -217,7 +209,6 @@ public class mainForm extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Bacteria");
-        setPreferredSize(new java.awt.Dimension(0, 0));
         setResizable(false);
 
         jPanelResult.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
