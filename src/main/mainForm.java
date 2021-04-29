@@ -54,7 +54,7 @@ public class mainForm extends javax.swing.JFrame {
             InstantiationException, IllegalAccessException, IllegalArgumentException, 
             InvocationTargetException, IOException, URISyntaxException {
         initComponents();
-        Food food = new Food.Builder(1024,700,Food.Distribution.random,500).build();
+        Food food = new Food.Builder(1024,700,Food.Distribution.square,500).build();
         inizializzaBatteri();
         Terrain terrain = new Terrain (food,batteri,jPanelTerrain.getBackground(),numeroBatteri,coloreBatteri);
         this.jPanelTerrain.add(terrain);
