@@ -1,4 +1,4 @@
-package batteri;
+package main;
 import java.util.Random;
 
 /**
