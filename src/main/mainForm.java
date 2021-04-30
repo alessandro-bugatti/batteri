@@ -10,7 +10,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -184,7 +183,6 @@ public class mainForm extends javax.swing.JFrame {
                     batteri.remove(i--);
             nomiBatteri.remove(nomiBatteri.size()-1);
         }
-        Collections.sort(nomiBatteri); //ordina i batteri secondo un'ordine alfabetico
         //inserimento dei dati nelle due hashmap
         for (int i=0; i<nomiBatteri.size(); i++) {
             coloreBatteri.put(nomiBatteri.get(i), colori.get(i));
