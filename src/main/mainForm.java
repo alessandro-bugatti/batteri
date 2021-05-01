@@ -55,7 +55,7 @@ public class mainForm extends javax.swing.JFrame {
         initComponents();
         Food food = new Food.Builder(1024,700,Food.Distribution.square,500).build();
         inizializzaBatteri();
-        Terrain terrain = new Terrain (food,batteri,jPanelTerrain.getBackground(),numeroBatteri,coloreBatteri);
+        Terrain terrain = new Terrain (batteri,jPanelTerrain.getBackground(),numeroBatteri,coloreBatteri);
         this.jPanelTerrain.add(terrain);
         //Creazione della lista dei nomi ed il numero dei batteri nella barra grafica
         values = new javax.swing.JLabel[10];

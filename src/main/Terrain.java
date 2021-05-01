@@ -15,19 +15,16 @@ import javax.swing.JPanel;
  */
 
 public class Terrain extends JPanel {
-    private static Food food;
     private final Color sfondo;
     private final LinkedList<Batterio> batteri;
     private final HashMap<String,Integer> numeroBatteri;
     private final HashMap<String, Color> coloreBatteri;
     public Terrain (
-            Food f, 
             LinkedList<Batterio> l, 
             Color s, 
             HashMap<String,Integer> numeroBatteri,
             HashMap<String,Color> coloreBatteri
     ) {
-        food = f;
         batteri = l;
         sfondo = s;
         this.numeroBatteri = numeroBatteri; 
