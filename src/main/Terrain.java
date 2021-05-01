@@ -15,7 +15,7 @@ import javax.swing.JPanel;
  */
 
 public class Terrain extends JPanel {
-    public static Food food;
+    private static Food food;
     private final Color sfondo;
     private final LinkedList<Batterio> batteri;
     private final HashMap<String,Integer> numeroBatteri;
