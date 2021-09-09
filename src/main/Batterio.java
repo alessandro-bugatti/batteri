@@ -87,8 +87,7 @@ abstract public class Batterio implements Cloneable {
      * e incrementa la sua salute di INCREASE_HEALTH
      */
     private void eat() {
-        if (Food.isFood(x, y)) {
-            food.eatFood(x, y);
+        if (food.eatFood(x, y)) {
             health+=INCREASE_HEALTH;
         }
     }
