@@ -54,6 +54,7 @@ public class mainForm extends javax.swing.JFrame {
             InvocationTargetException, IOException, URISyntaxException {
         initComponents();
         Food food = new Food.Builder(1024, 700, Food.Distribution.square, 500).build();
+        Batterio.setFood(food);
         inizializzaBatteri();
         this.jPanelTerrain.add(new Terrain(
                 batteri,

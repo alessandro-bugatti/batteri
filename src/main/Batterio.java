@@ -37,6 +37,7 @@ abstract public class Batterio implements Cloneable {
      * Cicli riproduttivi del batterio dalla prima clonazione in poi
      */
     private final static int REPRODUCTIVE_LOOPS = 200;
+
     /**
      * Contiene la vita del batterio, arrivata a zero il batterio muore
      */
@@ -60,8 +61,8 @@ abstract public class Batterio implements Cloneable {
     /**
      * riferimento al cibo
      */
-    private static final Food food;
-
+    private static Food food = null;
+    
     public Batterio() {
         this.x = (int) (Math.random() * Food.getWidth());
         this.y = (int) (Math.random() * Food.getHeight());
@@ -70,10 +71,12 @@ abstract public class Batterio implements Cloneable {
         this.loopsForCloning = INITIAL_REPRODUCTIVE_LOOPS + (int) (Math.random() * RANDOM_REPRODUCTIVE_LOOPS);
     }
     /**
-     * Recupera il riferimento a food
+     * Inserisce il riferimento al cibo
+     * @param food
      */
-    static {
-        food = Food.Builder.getFood();
+    public static void setFood(Food food) {
+        if (Batterio.food == null)
+            Batterio.food = food;
     }
   
     /**
