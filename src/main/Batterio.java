@@ -27,8 +27,9 @@ abstract public class Batterio implements Cloneable {
      */
     private final static int INCREASE_HEALTH = 100;
     /**
-     * I cicli riproduttivi iniziali del batterio sono composti da INITIAL_REPRODUCTIVE_LOOPS sommato 
-     * ad un numero casuale compreso tra zero e RANDOM_REPRODUCTIVE_LOOPS
+     * I cicli riproduttivi iniziali del batterio sono composti da
+     * INITIAL_REPRODUCTIVE_LOOPS sommato ad un numero casuale compreso tra zero
+     * e RANDOM_REPRODUCTIVE_LOOPS
      */
     private final static int INITIAL_REPRODUCTIVE_LOOPS = 500;
     private final static int RANDOM_REPRODUCTIVE_LOOPS = 100;
@@ -36,6 +37,7 @@ abstract public class Batterio implements Cloneable {
      * Cicli riproduttivi del batterio dalla prima clonazione in poi
      */
     private final static int REPRODUCTIVE_LOOPS = 200;
+
     /**
      * Contiene la vita del batterio, arrivata a zero il batterio muore
      */
@@ -59,20 +61,24 @@ abstract public class Batterio implements Cloneable {
     /**
      * riferimento al cibo
      */
-    private static final Food food;
+    private static Food food = null;
+    
     public Batterio() {
-        this.x = (int)(Math.random()*Food.getWidth());
-        this.y = (int)(Math.random()*Food.getHeight());
-        this.age = (int)(Math.random()*RANDOM_INITIAL_LIFE)+INITIAL_LIFE;
-        this.health = (int)(Math.random()*RANDOM_INITIAL_HEALTH)+INITIAL_HEALTH;
-        this.loopsForCloning = INITIAL_REPRODUCTIVE_LOOPS + (int)(Math.random()*RANDOM_REPRODUCTIVE_LOOPS);
+        this.x = (int) (Math.random() * Food.getWidth());
+        this.y = (int) (Math.random() * Food.getHeight());
+        this.age = (int) (Math.random() * RANDOM_INITIAL_LIFE) + INITIAL_LIFE;
+        this.health = (int) (Math.random() * RANDOM_INITIAL_HEALTH) + INITIAL_HEALTH;
+        this.loopsForCloning = INITIAL_REPRODUCTIVE_LOOPS + (int) (Math.random() * RANDOM_REPRODUCTIVE_LOOPS);
     }
     /**
-     * Recupera il riferimento a food
+     * Inserisce il riferimento al cibo
+     * @param food
      */
-    static {
-        food = Food.Builder.getFood();
+    public static void setFood(Food food) {
+        if (Batterio.food == null)
+            Batterio.food = food;
     }
+  
     /**
      * Sposta il batterio sul terreno di gioco
      * Deve essere ridefinita nelle classi ereditate per dar loro un comportamento diverso
@@ -84,8 +90,7 @@ abstract public class Batterio implements Cloneable {
      * e incrementa la sua salute di INCREASE_HEALTH
      */
     private void eat() {
-        if (Food.isFood(x, y)) {
-            food.eatFood(x, y);
+        if (food.eatFood(x, y)) {
             health+=INCREASE_HEALTH;
         }
     }
@@ -120,17 +125,20 @@ abstract public class Batterio implements Cloneable {
         try {
             this.move(); //Calcolo le nuove coordinate del batterio
         } catch (Exception e) {
-            System.out.println(e + " from " + this.getClass().getSimpleName());
-            this.health=0;
+            System.out.println(e + "(from " + this.getClass().getSimpleName() + " while moving)");
+            this.health = 0;
+            return;
         }
         this.eat(); //Mangia l'eventuale cibo
-        age--; //In batterio invecchia
+        this.age--; //Il batterio invecchia
         //Diminuisce la sua salute in funzione dello spostamento effettuato secondo una metrica Manhattan
-        int effort = Math.abs(getX()-xPrevious) + Math.abs(getY()-yPrevious);
-        health-=effort;
+        //https://it.wikipedia.org/wiki/Geometria_del_taxi
+        int effort = Math.abs(getX() - xPrevious) + Math.abs(getY() - yPrevious);
+        health -= effort;
         //Diminuisce il tempo per la riproduzione, solo se si è mosso, altrimenti no
-        if (loopsForCloning>0 && effort!=0)
+        if (effort != 0) {
             loopsForCloning--;
+        }
     }
     /**
      * @return x
@@ -162,17 +170,19 @@ abstract public class Batterio implements Cloneable {
     public final int getLoopsForCloning() {
         return this.loopsForCloning;
     }
+
     /**
      * Clona il batterio in senso biologico
-     * @return Un nuovo batterio creato con la stessa posizione di quello originale
+     *
+     * @return Un nuovo batterio
      * @throws java.lang.CloneNotSupportedException
      */
     @Override
     protected Batterio clone() throws CloneNotSupportedException {
-        Batterio b = (Batterio)super.clone();
-        b.age = (int)(Math.random()*RANDOM_INITIAL_LIFE)+INITIAL_LIFE;
-        b.health = (int)(Math.random()*RANDOM_INITIAL_HEALTH)+INITIAL_HEALTH;
-        b.loopsForCloning = INITIAL_REPRODUCTIVE_LOOPS + (int)(Math.random()*RANDOM_REPRODUCTIVE_LOOPS);
+        Batterio b = (Batterio) super.clone();
+        b.age = (int) (Math.random() * RANDOM_INITIAL_LIFE) + INITIAL_LIFE;
+        b.health = (int) (Math.random() * RANDOM_INITIAL_HEALTH) + INITIAL_HEALTH;
+        b.loopsForCloning = INITIAL_REPRODUCTIVE_LOOPS + (int) (Math.random() * RANDOM_REPRODUCTIVE_LOOPS);
         return b;
     }
 }
