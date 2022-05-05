@@ -53,7 +53,7 @@ public class mainForm extends javax.swing.JFrame {
             InstantiationException, IllegalAccessException, IllegalArgumentException,
             InvocationTargetException, IOException, URISyntaxException {
         initComponents();
-        Food food = new Food.Builder(1024, 640, Food.Distribution.square, 500).build();
+        Food food = new Food.Builder(1024, 640, Food.Distribution.SQUARE, 500).build();
         Batterio.setFood(food);
         inizializzaBatteri();
         this.jPanelTerrain.add(new Terrain(
@@ -200,11 +200,6 @@ public class mainForm extends javax.swing.JFrame {
             for (int i = 0; i < batteri.size(); i++) {
                 if (batteri.get(i).getClass().getSimpleName().equals(nome)) {
                     batteri.remove(i--);
-                    /*
-                    uguale a:
-                    batteri.remove(i);
-                    i--;
-                    */
                 }
             }
             nomiBatteri.remove(nome);
