@@ -79,8 +79,8 @@ public class Food {
      * Distribuisce il cibo secondo una distribuzione quadrata
      */
     private static void squareDistribution() {
-        int randx = random.nextInt(width) - foodDimension;
-        int randy = random.nextInt(height) - foodDimension;
+        int randx = random.nextInt(width - foodDimension);
+        int randy = random.nextInt(height - foodDimension);
         for (int i = 0; i < foodQuantity; i++) {
             food[random.nextInt(foodDimension) + randx][random.nextInt(foodDimension) + randy] = true;
         }
