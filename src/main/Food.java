@@ -43,7 +43,7 @@ public class Food {
      * Vari tipi di distribuzione del cibo
      */
     public static enum Distribution {
-        square, corner, random
+        SQUARE, CORNER, RANDOM
     }
     
     private Runnable distributionMethod;
@@ -59,13 +59,13 @@ public class Food {
         random = new Random();
         Food.distributionType = dt;
         switch (dt) {
-            case square:
+            case SQUARE:
                 distributionMethod = Food::squareDistribution;
                 break;
-            case corner:
+            case CORNER:
                 distributionMethod = Food::cornerDistribution;
                 break;
-            case random:
+            case RANDOM:
                 distributionMethod = Food::randomDistribution;
                 break;
             default:
@@ -77,13 +77,10 @@ public class Food {
 
     /**
      * Distribuisce il cibo secondo una distribuzione quadrata
-     *
-     * @param l lato del quadrato della distribuzione
-     * @param q quantità di cibo da distribuire
      */
     private static void squareDistribution() {
-        int randx = random.nextInt(width - foodQuantity);
-        int randy = random.nextInt(height - foodQuantity);
+        int randx = random.nextInt(width) - foodDimension;
+        int randy = random.nextInt(height) - foodDimension;
         for (int i = 0; i < foodQuantity; i++) {
             food[random.nextInt(foodDimension) + randx][random.nextInt(foodDimension) + randy] = true;
         }
@@ -91,8 +88,6 @@ public class Food {
 
     /**
      * Distribuisce il cibo secondo una distribuzione casuale
-     *
-     * @param q quantità di cibo da distribuire
      */
     private static void randomDistribution() {
         for (int i = 0; i < foodQuantity; i++) {
@@ -103,10 +98,7 @@ public class Food {
     /**
      * Distribuisce il cibo secondo una distribuzione che distribuisce solo
      * negli angoli
-     *
-     * @param radius raggio del cerchio dove verrà distribuito il cibo
-     * @param q quantità di cibo da distribuire
-     */
+    */
     private static void cornerDistribution() {
         int x = 0, y = 0, dx = 1, dy = 1;
         int corner = random.nextInt(4);
