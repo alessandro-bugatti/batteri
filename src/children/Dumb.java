@@ -9,12 +9,16 @@ public class Dumb extends main.Batterio{
     protected void move() {
         if (goDown) {
             y++;
-            if (y>Food.getHeight())
+            if (y > Food.getHeight()) {
                 goDown = false;
+                y = Food.getHeight() - 1;
+            }
         } else {
             y--;
-            if (y<0)
+            if (y < 0) {
                 goDown = true;
+                y = 0;
+            }
         }
         
     }
