@@ -101,10 +101,9 @@ public class mainForm extends javax.swing.JFrame {
         timerUpdateResult = new Timer(1000, (ActionEvent e) -> {
             for (int i = 0; i < values.size(); i++) {
                 if (numeroBatteri.get(nomiBatteri.get(i)) > 0) {
-                    System.out.print(numeroBatteri.get(nomiBatteri.get(i)) + " ");
                     values.get(i).setText(nomiBatteri.get(i) + " " + numeroBatteri.get(nomiBatteri.get(i)));
                 } else {
-                    System.out.print('('+nomiBatteri.get(i)+" is dead) ");
+                    System.out.println('('+nomiBatteri.get(i)+" is dead) ");
                     numeroBatteri.remove(nomiBatteri.get(i));
                     coloreBatteri.remove(nomiBatteri.get(i));
                     values.get(i).setText(nomiBatteri.get(i) + " 0");
@@ -113,7 +112,6 @@ public class mainForm extends javax.swing.JFrame {
                     i--;
                 }
             }
-            System.out.println();
         });
     }
 
@@ -212,7 +210,10 @@ public class mainForm extends javax.swing.JFrame {
         System.out.println(numeroBatteri.size() + " bacteria approved: ");
         //stampa il tempo medio (in nanosecondi) di esecuzione di ciascun batterio
         for (int i = 0; i < nomiBatteri.size(); i++) {
-            System.out.println(tempiEsecuzione[i] / NUMEROBATTERIINIZIALI + "\tns (" + nomiBatteri.get(i) + ')');
+            if (tempiEsecuzione[i] / NUMEROBATTERIINIZIALI< 2000)
+                System.out.println(tempiEsecuzione[i] / NUMEROBATTERIINIZIALI + "\tns OK (" + nomiBatteri.get(i) + ')');
+            else
+                System.out.println(tempiEsecuzione[i] / NUMEROBATTERIINIZIALI + "\tns KO (" + nomiBatteri.get(i) + ')');
         }
         values = new LinkedList <> ();
         //Creazione della lista dei nomi ed il numero dei batteri nella barra grafica
