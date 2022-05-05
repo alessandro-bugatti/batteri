@@ -249,7 +249,7 @@ public class mainForm extends javax.swing.JFrame {
 
         jPanelResult.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         jPanelResult.setMinimumSize(new java.awt.Dimension(150, 100));
-        jPanelResult.setPreferredSize(new java.awt.Dimension(300, 70));
+        jPanelResult.setPreferredSize(new java.awt.Dimension(240, 70));
         jPanelResult.setLayout(new javax.swing.BoxLayout(jPanelResult, javax.swing.BoxLayout.Y_AXIS));
         getContentPane().add(jPanelResult, java.awt.BorderLayout.LINE_END);
 
